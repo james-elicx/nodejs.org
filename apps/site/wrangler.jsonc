@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "vinext/server/app-router-entry",
   "name": "nodejs-website",
   "compatibility_date": "2024-11-07",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],

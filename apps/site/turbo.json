@@ -23,6 +23,27 @@
         "TURBOPACK_STATS"
       ]
     },
+    "dev:vinext": {
+      "dependsOn": ["build:blog-data"],
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "NEXT_PUBLIC_STATIC_EXPORT",
+        "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_DIST_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
+        "NEXT_PUBLIC_DATA_URL",
+        "TURBO_CACHE",
+        "TURBO_TELEMETRY_DISABLED",
+        "TURBOPACK_STATS"
+      ]
+    },
     "build": {
       "dependsOn": ["build:blog-data", "^build"],
       "inputs": [
@@ -33,6 +54,35 @@
         "*.{md,mdx,json,ts,tsx,mjs,yml}"
       ],
       "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "NEXT_PUBLIC_STATIC_EXPORT",
+        "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_DIST_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_ORAMA_API_KEY",
+        "NEXT_PUBLIC_ORAMA_ENDPOINT",
+        "NEXT_PUBLIC_DATA_URL",
+        "TURBO_CACHE",
+        "TURBO_TELEMETRY_DISABLED",
+        "TURBOPACK_STATS",
+        "ENABLE_EXPERIMENTAL_COREPACK"
+      ]
+    },
+    "build:vinext": {
+      "dependsOn": ["build:blog-data", "^build"],
+      "inputs": [
+        "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
+        "{app,components,layouts,pages,styles}/**/*.css",
+        "{next-data,scripts,i18n}/**/*.{mjs,json}",
+        "{app,pages}/**/*.{mdx,md}",
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "vite.config.ts"
+      ],
+      "outputs": [".vinext/**", "dist/**"],
       "env": [
         "VERCEL_ENV",
         "VERCEL_URL",

@@ -4,6 +4,15 @@ import { getRequestConfig } from 'next-intl/server';
 
 import { deepMerge } from './util/objects';
 
+// Statically analyzable glob import of all locale JSON files.
+// Vite requires the glob pattern to be a string literal – no dynamic template
+// strings – so we eagerly collect every locale file at build/dev startup and
+// then pick the right one at runtime by locale code.
+const localeModules = import.meta.glob<{ default: Record<string, unknown> }>(
+  './node_modules/@node-core/website-i18n/src/locales/*.json',
+  { eager: false }
+);
+
 // Loads the Application Locales/Translations Dynamically
 const loadLocaleDictionary = async (locale: string) => {
   if (locale === defaultLocale.code) {
@@ -11,14 +20,18 @@ const loadLocaleDictionary = async (locale: string) => {
   }
 
   if (availableLocaleCodes.includes(locale)) {
-    // Other languages don't really require HMR as they
-    // will never be development languages so we can load them dynamically
-    const { default: messages } = await import(
-      `@node-core/website-i18n/locales/${locale}.json`
+    // Find the matching module loader from the glob map.
+    // The glob keys are relative to the vite root (apps/site), e.g.:
+    //   ../../node_modules/@node-core/website-i18n/src/locales/fr.json
+    const key = Object.keys(localeModules).find(k =>
+      k.endsWith(`/${locale}.json`)
     );
 
-    // Use default messages as fallback
-    return deepMerge(defaultMessages, messages);
+    if (key) {
+      const { default: messages } = await localeModules[key]();
+      // Use default messages as fallback
+      return deepMerge(defaultMessages, messages as typeof defaultMessages);
+    }
   }
 
   throw new Error(`Unsupported locale: ${locale}`);

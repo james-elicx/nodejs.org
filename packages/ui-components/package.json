@@ -3,19 +3,18 @@
   "version": "1.6.1",
   "type": "module",
   "exports": {
+    "./types": {
+      "rolldown": "./dist/types.js",
+      "default": "./src/types.ts"
+    },
+    "./constants": {
+      "rolldown": "./dist/constants.js",
+      "default": "./src/constants.ts"
+    },
+    "./*.css": "./src/*.css",
     "./*": {
-      "rolldown": [
-        "./dist/*",
-        "./dist/*.js",
-        "./dist/*/index.js"
-      ],
-      "default": [
-        "./src/*",
-        "./src/*.tsx",
-        "./src/*/index.tsx",
-        "./src/*.ts",
-        "./src/*/index.ts"
-      ]
+      "rolldown": "./dist/*/index.js",
+      "default": "./src/*/index.tsx"
     }
   },
   "repository": {
@@ -88,19 +87,19 @@
     "tsx": "4.21.0"
   },
   "imports": {
+    "#ui/*.css": "./src/*.css",
+    "#ui/types": "./src/types.ts",
+    "#ui/constants": "./src/constants.ts",
+    "#ui/hooks/*": "./src/hooks/*.ts",
+    "#ui/Icons/OperatingSystem": "./src/Icons/OperatingSystem/index.ts",
+    "#ui/Icons/PackageManager": "./src/Icons/PackageManager/index.ts",
+    "#ui/Icons/InstallationMethod": "./src/Icons/InstallationMethod/index.ts",
+    "#ui/Icons/Logos": "./src/Icons/Logos/index.ts",
+    "#ui/Icons/Social": "./src/Icons/Social/index.ts",
+    "#ui/Icons/PartnerLogos": "./src/Icons/PartnerLogos/index.ts",
     "#ui/*": {
-      "rolldown": [
-        "./dist/*",
-        "./dist/*.js",
-        "./dist/*/index.js"
-      ],
-      "default": [
-        "./src/*",
-        "./src/*.tsx",
-        "./src/*/index.tsx",
-        "./src/*.ts",
-        "./src/*/index.ts"
-      ]
+      "rolldown": "./dist/*/index.js",
+      "default": "./src/*/index.tsx"
     }
   },
   "files": [

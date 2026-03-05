@@ -46,10 +46,7 @@
     "cross-env": "catalog:"
   },
   "imports": {
-    "#rs/*": [
-      "./src/*",
-      "./src/*.mjs"
-    ]
+    "#rs/*.mjs": "./src/*.mjs"
   },
   "engines": {
     "node": ">=20"

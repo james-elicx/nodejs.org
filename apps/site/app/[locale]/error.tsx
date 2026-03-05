@@ -1,17 +1,21 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-
-import Button from '#site/components/Common/Button';
-import GlowingBackdropLayout from '#site/layouts/GlowingBackdrop';
+import defaultMessages from '@node-core/website-i18n/locales/en.json';
+import { NextIntlClientProvider, useTranslations } from 'next-intl';
 
 import type { FC } from 'react';
 
-const ErrorPage: FC<{ error: Error }> = () => {
+import Button from '#site/components/Common/Button';
+import WithErrorLayout from '#site/components/withErrorLayout';
+
+
+const ErrorContent: FC<{ error: Error }> = ({ error }) => {
   const t = useTranslations();
 
+  console.error(error);
+
   return (
-    <GlowingBackdropLayout kind="default">
+    <WithErrorLayout>
       <span>500</span>
 
       <h1 className="special -mt-4 text-center">
@@ -23,8 +27,14 @@ const ErrorPage: FC<{ error: Error }> = () => {
       </p>
 
       <Button href="/">{t('layouts.error.backToHome')}</Button>
-    </GlowingBackdropLayout>
+    </WithErrorLayout>
   );
 };
+
+const ErrorPage: FC<{ error: Error }> = ({ error }) => (
+  <NextIntlClientProvider locale="en" messages={defaultMessages}>
+    <ErrorContent error={error} />
+  </NextIntlClientProvider>
+);
 
 export default ErrorPage;

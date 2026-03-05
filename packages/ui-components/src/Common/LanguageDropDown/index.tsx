@@ -1,3 +1,5 @@
+'use client';
+
 import { LanguageIcon } from '@heroicons/react/24/outline';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import classNames from 'classnames';

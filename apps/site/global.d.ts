@@ -1,3 +1,5 @@
+/// <reference types="vite/client" />
+
 import { Locale } from '@node-core/website-i18n/types';
 
 declare module 'next-intl' {
