@@ -95,119 +95,6 @@ const workspaceResolverPlugin = {
 };
 
 // ---------------------------------------------------------------------------
-// Plugin: request-logger
-//
-// Wraps every incoming HTTP request and logs:
-//   METHOD  /path/to/url  →  STATUS  (Xms)
-// Color coding: 2xx green, 3xx cyan, 4xx yellow, 5xx red.
-// Errors that bubble out of handlers (unhandled exceptions) are logged in red.
-// Only active in dev mode (configureServer is never called during build).
-// ---------------------------------------------------------------------------
-const requestLoggerPlugin = {
-  name: 'request-logger',
-  configureServer(server: {
-    middlewares: {
-      use: (
-        fn: (
-          req: IncomingMessage,
-          res: ServerResponse,
-          next: () => void
-        ) => void
-      ) => void;
-    };
-  }) {
-    // Install as the very first middleware so every request is captured,
-    // including ones that are handled by @vitejs/plugin-rsc or vinext before
-    // reaching Vite's own static-file / error middleware.
-    server.middlewares.use(
-      (req: IncomingMessage, res: ServerResponse, next: () => void) => {
-        const url =
-          (req as IncomingMessage & { originalUrl?: string }).originalUrl ??
-          req.url ??
-          '/';
-
-        // Skip Vite internals — they're noise and fire on every HMR ping.
-        if (
-          url.startsWith('/@') ||
-          url.startsWith('/__vite') ||
-          url.startsWith('/node_modules') ||
-          url === '/favicon.ico'
-        ) {
-          return next();
-        }
-
-        const method = (req.method ?? 'GET').toUpperCase();
-        const start = Date.now();
-
-        // Intercept writeHead so we capture the status code that the downstream
-        // handler actually sends, even when it never calls res.end() explicitly
-        // (e.g. streaming responses from @vitejs/plugin-rsc).
-        const resAny = res as ServerResponse & {
-          _loggedStatus?: number;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          writeHead: (...args: Array<any>) => any;
-        };
-        const origWriteHead = resAny.writeHead.bind(resAny);
-        resAny.writeHead = function (
-          statusCode: number,
-          ...args: Array<unknown>
-        ) {
-          resAny._loggedStatus = statusCode;
-          return origWriteHead(statusCode, ...args);
-        };
-
-        res.on('finish', () => {
-          const status =
-            (res as ServerResponse & { _loggedStatus?: number })
-              ._loggedStatus ?? res.statusCode;
-          const ms = Date.now() - start;
-
-          // ANSI colour helpers (no extra dep needed)
-          const reset = '\x1b[0m';
-          const bold = '\x1b[1m';
-          const dim = '\x1b[2m';
-          const green = '\x1b[32m';
-          const cyan = '\x1b[36m';
-          const yellow = '\x1b[33m';
-          const red = '\x1b[31m';
-          const blue = '\x1b[34m';
-
-          const statusColour =
-            status >= 500
-              ? red
-              : status >= 400
-                ? yellow
-                : status >= 300
-                  ? cyan
-                  : green;
-
-          const methodColour =
-            method === 'GET'
-              ? blue
-              : method === 'POST'
-                ? green
-                : method === 'PUT'
-                  ? yellow
-                  : method === 'DELETE'
-                    ? red
-                    : dim;
-
-          console.log(
-            `${bold}${methodColour}${method.padEnd(7)}${reset}` +
-              `${dim}${url}${reset}` +
-              `  →  ` +
-              `${bold}${statusColour}${status}${reset}` +
-              `  ${dim}(${ms}ms)${reset}`
-          );
-        });
-
-        next();
-      }
-    );
-  },
-};
-
-// ---------------------------------------------------------------------------
 // Plugin: mjs-jsx
 // Vite's esbuild transformer only processes JSX in .jsx/.tsx files by default.
 // This project has next.dynamic.page.mjs which contains JSX but uses the .mjs
@@ -231,16 +118,15 @@ const mjsJsxPlugin = {
 // ---------------------------------------------------------------------------
 export default defineConfig({
   plugins: [
-    requestLoggerPlugin,
     workspaceResolverPlugin,
     mjsJsxPlugin,
     vinext(),
-    // cloudflare({
-    //   viteEnvironment: {
-    //     name: 'rsc',
-    //     childEnvironments: ['ssr'],
-    //   },
-    // }),
+    cloudflare({
+      viteEnvironment: {
+        name: 'rsc',
+        childEnvironments: ['ssr'],
+      },
+    }),
   ],
   resolve: {
     alias: {
@@ -290,16 +176,60 @@ export default defineConfig({
     client: {
       optimizeDeps: {
         exclude: ['next-intl', 'use-intl'],
+        esbuildOptions: { loader: { '.mjs': 'jsx' } },
       },
     },
     rsc: {
       optimizeDeps: {
-        exclude: ['next-intl', 'use-intl'],
+        // next/og and @vercel/og embed an emscripten WASM binary that calls
+        // WebAssembly.instantiate() at module load time. The Vite RSC worker
+        // environment (via @cloudflare/vite-plugin) blocks WASM code generation
+        // at the embedder level, causing an unrecoverable crash. Excluding
+        // these packages from pre-bundling prevents them from being inlined
+        // into the RSC worker bundle — they remain as externals that are never
+        // actually executed in this environment (OG image routes only run at
+        // request time on a real Node.js server).
+        exclude: ['next-intl', 'use-intl', 'next/og', '@vercel/og'],
+        esbuildOptions: { loader: { '.mjs': 'jsx' } },
       },
     },
     ssr: {
       optimizeDeps: {
-        exclude: ['next-intl', 'use-intl'],
+        // @radix-ui/* packages have deep transitive deps that the SSR
+        // pre-bundler inlines into a shared chunk but then fails to resolve at
+        // runtime inside the miniflare worker. Excluding the full transitive
+        // closure lets the worker runner resolve each package directly from
+        // node_modules without going through a broken pre-bundled chunk.
+        // List derived from: all @radix-ui deps of ui-components + their deps.
+        exclude: [
+          'next-intl',
+          'use-intl',
+          'next/og',
+          '@vercel/og',
+          '@radix-ui/primitive',
+          '@radix-ui/react-avatar',
+          '@radix-ui/react-compose-refs',
+          '@radix-ui/react-context',
+          '@radix-ui/react-dialog',
+          '@radix-ui/react-direction',
+          '@radix-ui/react-dismissable-layer',
+          '@radix-ui/react-dropdown-menu',
+          '@radix-ui/react-id',
+          '@radix-ui/react-label',
+          '@radix-ui/react-popper',
+          '@radix-ui/react-portal',
+          '@radix-ui/react-presence',
+          '@radix-ui/react-primitive',
+          '@radix-ui/react-roving-focus',
+          '@radix-ui/react-select',
+          '@radix-ui/react-separator',
+          '@radix-ui/react-slot',
+          '@radix-ui/react-tabs',
+          '@radix-ui/react-tooltip',
+          '@radix-ui/react-use-controllable-state',
+          '@radix-ui/react-visually-hidden',
+        ],
+        esbuildOptions: { loader: { '.mjs': 'jsx' } },
       },
     },
   },

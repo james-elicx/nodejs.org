@@ -40,12 +40,22 @@ const loadLocaleDictionary = async (locale: string) => {
 // Provides `next-intl` configuration for RSC/SSR
 export default getRequestConfig(async ({ requestLocale }) => {
   // This typically corresponds to the `[locale]` segment
-  let locale = await requestLocale;
+  const rawLocale = await requestLocale;
+
+  console.log('[i18n] requestLocale resolved to:', rawLocale);
+
+  let locale = rawLocale;
 
   // Ensure that the incoming locale is valid
   if (!locale || !availableLocaleCodes.includes(locale)) {
+    console.log(
+      '[i18n] locale invalid or missing, falling back to default:',
+      defaultLocale.code
+    );
     locale = defaultLocale.code;
   }
+
+  console.log('[i18n] using locale:', locale);
 
   return {
     locale,

@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -14,9 +10,7 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "Bundler",
-    "customConditions": [
-      "default"
-    ],
+    "customConditions": ["default"],
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -24,12 +18,12 @@
     "baseUrl": ".",
     "plugins": [
       {
-        "name": "next"
-      }
-    ]
+        "name": "next",
+      },
+    ],
   },
   "mdx": {
-    "checkMdx": true
+    "checkMdx": true,
   },
   "include": [
     "**/*.js",
@@ -42,11 +36,7 @@
     ".stylelintrc.mjs",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    ".vinext/types/**/*.ts"
+    ".vinext/types/**/*.ts",
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    ".vinext"
-  ]
+  "exclude": ["node_modules", ".next", ".vinext"],
 }

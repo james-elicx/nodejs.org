@@ -1,7 +1,6 @@
 'use strict';
 
-import { readFile } from 'node:fs/promises';
-import { join, normalize, sep } from 'node:path';
+import { normalize, sep } from 'node:path';
 
 import { availableLocaleCodes, defaultLocale } from '@node-core/website-i18n';
 import matter from 'gray-matter';
@@ -16,7 +15,10 @@ import { DEFAULT_CATEGORY_OG_TYPE } from './next.constants.mjs';
 import { ENABLE_STATIC_EXPORT } from './next.constants.mjs';
 import { IS_DEV_ENV } from './next.constants.mjs';
 import { PAGE_METADATA } from './next.dynamic.constants.mjs';
-import { getMarkdownFiles } from './next.helpers.mjs';
+import {
+  getMarkdownFiles,
+  markdownContentsByLocaleAndFile,
+} from './next.helpers.mjs';
 import { siteConfig } from './next.json.mjs';
 
 // This is the combination of the Application Base URL and Base PATH
@@ -54,10 +56,6 @@ const getDynamicRouter = async () => {
 
   // Keeps the map of pathnames to filenames
   const pathnameToFilename = new Map();
-
-  // Pre-compute the pages directory path to avoid Turbopack's overly broad
-  // file pattern analysis when using path.join() with dynamic segments
-  const pagesDirectory = join(process.cwd(), 'pages');
 
   const websitePages = await getMarkdownFiles(
     process.cwd(),
@@ -105,7 +103,6 @@ const getDynamicRouter = async () => {
     // meaning that the route exists on the website and can be rendered
     if (pathnameToFilename.has(normalizedPathname)) {
       const filename = pathnameToFilename.get(normalizedPathname);
-      const filepath = normalize(`${pagesDirectory}/${locale}/${filename}`);
 
       // We verify if our Markdown cache already has a cache entry for a localized
       // version of this file, because if not, it means that either
@@ -118,11 +115,11 @@ const getDynamicRouter = async () => {
         return { source: fileContent, filename };
       }
 
-      // Attempts to read a file or simply (and silently) fail, as the file might
-      // simply not exist or whatever other reason that might cause the file to not be read
-      const fileLanguageContent = await readFile(filepath, 'utf8').catch(
-        () => undefined
-      );
+      // Look up the file contents from the import.meta.glob map.
+      // This was populated at Vite build/dev startup so it works in every
+      // runtime environment including the RSC worker where node:fs is shimmed.
+      const fileLanguageContent =
+        markdownContentsByLocaleAndFile[`${locale}/${filename}`];
 
       // No cache hit exists, so we check if the localized file actually
       // exists within our file system and if it does we set it on the cache

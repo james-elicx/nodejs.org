@@ -2,22 +2,23 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "main": "vinext/server/app-router-entry",
   "name": "nodejs-website",
-  "compatibility_date": "2024-11-07",
+  "compatibility_date": "2026-03-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "account_id": "fb4a2d0f103c6ff38854ac69eb709272",
   "minify": true,
   "keep_names": false,
   "assets": {
-    "directory": ".open-next/assets",
+    // "directory": ".open-next/assets",
+    "not_found_handling": "none",
     "binding": "ASSETS",
-    "run_worker_first": true,
+    // "run_worker_first": true,
   },
-  "services": [
-    {
-      "binding": "WORKER_SELF_REFERENCE",
-      "service": "nodejs-website",
-    },
-  ],
+  // "services": [
+  //   {
+  //     "binding": "WORKER_SELF_REFERENCE",
+  //     "service": "nodejs-website",
+  //   },
+  // ],
   "vars": {
     // Variables needed for skew protection
     // Also note that an appropriate CF_WORKERS_SCRIPTS_API_TOKEN secret
@@ -39,24 +40,24 @@
     "fs": "./.wrangler/fs-assets-polyfilling/polyfills/node/fs.ts",
     "fs/promises": "./.wrangler/fs-assets-polyfilling/polyfills/node/fs/promises.ts",
   },
-  "r2_buckets": [
-    {
-      "binding": "NEXT_INC_CACHE_R2_BUCKET",
-      "bucket_name": "next-cache-r2-for-open-next-website",
-    },
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "NEXT_CACHE_DO_QUEUE",
-        "class_name": "DOQueueHandler",
-      },
-    ],
-  },
-  "migrations": [
-    {
-      "tag": "v1",
-      "new_sqlite_classes": ["DOQueueHandler"],
-    },
-  ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "NEXT_INC_CACHE_R2_BUCKET",
+  //     "bucket_name": "next-cache-r2-for-open-next-website",
+  //   },
+  // ],
+  // "durable_objects": {
+  //   "bindings": [
+  //     {
+  //       "name": "NEXT_CACHE_DO_QUEUE",
+  //       "class_name": "DOQueueHandler",
+  //     },
+  //   ],
+  // },
+  // "migrations": [
+  //   {
+  //     "tag": "v1",
+  //     "new_sqlite_classes": ["DOQueueHandler"],
+  //   },
+  // ],
 }
