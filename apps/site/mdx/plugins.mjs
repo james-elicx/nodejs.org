@@ -48,6 +48,20 @@ console.log(
 
 const USE_WASM = !OPEN_NEXT_CLOUDFLARE && REAL_NODE;
 
+// Twoslash requires loading the TypeScript compiler and performing type-checks
+// at syntax-highlight time.  In a production build the twoslash chunk
+// (index-B7jGOecK.js) re-imports the main worker-entry bundle, which creates a
+// circular top-level-await dependency that deadlocks Node.js ESM loader.
+// Twoslash is only useful during `vinext dev` (where Vite's module runner
+// evaluates chunks lazily and avoids the cycle), so we gate it on the Vite
+// dev-server signal: import.meta.hot is defined only in that context.
+//
+// Summary of USE_* flags:
+//   Cloudflare Worker  → USE_WASM=false, USE_TWOSLASH=false
+//   vinext dev (Node)  → USE_WASM=true,  USE_TWOSLASH=true
+//   vinext start (Node)→ USE_WASM=true,  USE_TWOSLASH=false
+const USE_TWOSLASH = USE_WASM && typeof import.meta.hot !== 'undefined';
+
 // Shiki is created out here to avoid an async rehype plugin
 const singletonShiki = await rehypeShikiji({
   // We use the faster WASM engine on the server instead of the web-optimized version.
@@ -58,7 +72,10 @@ const singletonShiki = await rehypeShikiji({
   wasm: USE_WASM,
 
   // TODO(@avivkeller): Find a way to enable Twoslash w/ a VFS on Cloudflare
-  twoslash: USE_WASM,
+  // Disabled in production builds to prevent a circular TLA deadlock: the
+  // twoslash chunk re-imports the parent worker-entry module, which Node.js
+  // ESM cannot resolve while the parent's own top-level await is still pending.
+  twoslash: USE_TWOSLASH,
 });
 
 /**

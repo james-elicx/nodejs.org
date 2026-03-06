@@ -6,7 +6,7 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import vinext from 'vinext';
 import { transformWithEsbuild, defineConfig } from 'vite';
 
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { Plugin } from 'vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -114,19 +114,235 @@ const mjsJsxPlugin = {
 };
 
 // ---------------------------------------------------------------------------
+// Plugin: node-wasm-patch
+//
+// The @cloudflare/vite-plugin bundles `.wasm` files into the RSC worker entry
+// using Cloudflare's native WASM module import syntax:
+//
+//   import resvg_wasm from "./resvg-Cjh1zH0p.wasm";
+//   import "./resvg-Cjh1zH0p.wasm";   ← side-effect form in dist/server/index.js
+//
+// Named imports (.wasm → WebAssembly.Module default export) are now handled
+// transparently by the vinext wasm-hook.js ESM loader hook registered in
+// prod-server.js, so dist/server/ needs no patching for those.
+//
+// Two remaining Node.js incompatibilities are fixed here post-build:
+//
+// 1. Side-effect .wasm imports in dist/server/index.js
+//    Node.js (even with the hook) will attempt to evaluate the side-effect
+//    import before the hook can short-circuit it cleanly.  We simply strip
+//    these bare imports — the actual WebAssembly.Module is already obtained
+//    via the named import in the worker-entry chunk.
+//
+// 2. @vercel/og top-level font fetch using import.meta.url
+//    The worker-entry contains:
+//      var fallbackFont = fetch(new URL("./noto-sans-...ttf", import.meta.url))
+//    Node.js fetch() cannot handle file:// URLs. We replace this with a
+//    readFileSync-based equivalent that works in both environments.
+//
+// dist/server/ is patched in-place. wrangler dev is unaffected because it
+// runs the worker inside miniflare where native WASM imports are valid and
+// import.meta.url is not used for font loading (CF rewrites that at bundle
+// time). The patches here are no-ops from CF's perspective.
+//
+// The hook is `enforce: 'post'` and only fires during build (not dev).
+// ---------------------------------------------------------------------------
+// Matches:  import "./something.wasm";   (side-effect only, no binding)
+const WASM_SIDE_EFFECT_IMPORT_RE = /^import\s+["']([^"']+\.wasm)["'];?$/gm;
+
+// Matches any new URL("./something.ttf", import.meta.url) expression.
+//
+// In Cloudflare Workers import.meta.url is undefined, so
+// `new URL(ttf, undefined)` throws "Invalid URL string" at startup.
+// Wrangler normally rewrites these at bundle/deploy time, but wrangler dev
+// runs the already-built files directly and hits the crash.
+//
+// Fix: replace `import.meta.url` with `import.meta.url ?? "file:///"`
+// so the URL constructor doesn't throw in CF Workers. The fallback URL is
+// never actually fetched there. In Node.js, import.meta.url is always
+// defined so the fallback is never used.
+//
+// We also scan for all .ttf filenames referenced this way and copy them
+// from node_modules into the dist/server/assets/ directory so that the
+// Node.js file:// fetch polyfill in prod-server can read them.
+const FONT_META_URL_RE =
+  /new URL\(["'](\.[^"']+\.ttf)["'],\s*import\.meta\.url\s*\)/g;
+
+/**
+ * Walk a directory recursively and yield absolute paths of every .js file.
+ */
+function* walkJs(dir: string): Generator<string> {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      yield* walkJs(full);
+    } else if (entry.isFile() && entry.name.endsWith('.js')) {
+      yield full;
+    }
+  }
+}
+
+const nodeWasmPatchPlugin: Plugin = {
+  name: 'node-wasm-patch',
+  enforce: 'post',
+  apply: 'build',
+  applyToEnvironment(env) {
+    // Only post-process the RSC (server) build output.
+    // The Cloudflare plugin owns the rsc environment build; we run after it.
+    return env.name === 'rsc';
+  },
+  closeBundle() {
+    const outDir = path.resolve(__dirname, 'dist', 'server');
+    if (!fs.existsSync(outDir)) {
+      return;
+    }
+
+    let patchCount = 0;
+
+    for (const filePath of walkJs(outDir)) {
+      let code = fs.readFileSync(filePath, 'utf-8');
+      let changed = false;
+
+      // --- font file:// URLs: guard import.meta.url + copy missing fonts ---
+      // CF Workers have import.meta.url === undefined, so
+      // new URL("./font.ttf", import.meta.url) throws at startup.
+      // Guard with a null-safe fallback and ensure the .ttf files exist
+      // next to the chunk so the Node.js file:// fetch polyfill can read them.
+      if (FONT_META_URL_RE.test(code)) {
+        FONT_META_URL_RE.lastIndex = 0;
+
+        // Collect every .ttf specifier referenced in this file.
+        const ttfSpecifiers: Array<string> = [];
+        let m: RegExpExecArray | null;
+        while ((m = FONT_META_URL_RE.exec(code)) !== null) {
+          ttfSpecifiers.push(m[1]); // e.g. "./noto-sans-v27-latin-regular.ttf"
+        }
+        FONT_META_URL_RE.lastIndex = 0;
+
+        // Copy any missing font files next to this JS chunk.
+        // Search for each font by basename across all node_modules under the
+        // project root — this handles pnpm, nested deps, etc.
+        const jsDir = path.dirname(filePath);
+        for (const specifier of ttfSpecifiers) {
+          const basename = path.basename(specifier);
+          const dest = path.join(jsDir, basename);
+          if (fs.existsSync(dest)) {continue;}
+
+          // Walk node_modules looking for the font file.
+          const found = (function findFont(
+            dir: string,
+            depth = 0
+          ): string | null {
+            if (depth > 6) {return null;}
+            const nmDir = path.join(dir, 'node_modules');
+            if (!fs.existsSync(nmDir)) {return null;}
+            // Breadth-first: check all packages at this level first.
+            for (const pkg of fs.readdirSync(nmDir)) {
+              const pkgDir = path.join(nmDir, pkg.startsWith('@') ? pkg : pkg);
+              // For scoped packages, descend one more level.
+              if (pkg.startsWith('@')) {
+                try {
+                  for (const sub of fs.readdirSync(pkgDir)) {
+                    const candidate = path.join(pkgDir, sub, 'dist', basename);
+                    if (fs.existsSync(candidate)) {return candidate;}
+                    const candidate2 = path.join(pkgDir, sub, basename);
+                    if (fs.existsSync(candidate2)) {return candidate2;}
+                  }
+                } catch {
+                  /* not a dir */
+                }
+                continue;
+              }
+              const candidate = path.join(pkgDir, 'dist', basename);
+              if (fs.existsSync(candidate)) {return candidate;}
+              const candidate2 = path.join(pkgDir, basename);
+              if (fs.existsSync(candidate2)) {return candidate2;}
+            }
+            // Recurse into nested node_modules.
+            for (const pkg of fs.readdirSync(nmDir)) {
+              const result = findFont(path.join(nmDir, pkg), depth + 1);
+              if (result) {return result;}
+            }
+            return null;
+          })(__dirname);
+
+          if (found) {
+            fs.copyFileSync(found, dest);
+            console.log(
+              `[node-wasm-patch] Copied font ${basename} → ${path.relative(outDir, dest)}`
+            );
+          } else {
+            console.warn(
+              `[node-wasm-patch] Could not find font ${basename} in node_modules`
+            );
+          }
+        }
+
+        // Patch import.meta.url → import.meta.url ?? "file:///" so CF Workers
+        // don't crash when evaluating new URL(ttf, undefined) at startup.
+        const patched = code.replace(FONT_META_URL_RE, match =>
+          match.replace('import.meta.url', 'import.meta.url ?? "file:///"')
+        );
+        if (patched !== code) {
+          code = patched;
+          changed = true;
+        }
+      }
+
+      // --- side-effect WASM imports: import "./x.wasm"; ---
+      // These appear in the RSC index.js as re-exports of assets pulled in by
+      // the worker entry. They have no binding so there is nothing to compile;
+      // the actual WASM compilation happens in the worker-entry chunk that
+      // holds the named import. We simply remove the bare import so Node.js
+      // does not try to parse the binary as an ES module.
+      if (WASM_SIDE_EFFECT_IMPORT_RE.test(code)) {
+        WASM_SIDE_EFFECT_IMPORT_RE.lastIndex = 0;
+        const patched = code.replace(
+          WASM_SIDE_EFFECT_IMPORT_RE,
+          (_match, specifier: string) => {
+            return `// [node-wasm-patch] removed side-effect WASM import: ${specifier}`;
+          }
+        );
+        if (patched !== code) {
+          code = patched;
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        fs.writeFileSync(filePath, code, 'utf-8');
+        console.log(
+          `[node-wasm-patch] Patched in ${path.relative(outDir, filePath)}`
+        );
+        patchCount++;
+      }
+    }
+
+    if (patchCount > 0) {
+      console.log(
+        `[node-wasm-patch] Patched ${patchCount} file(s) in ${outDir}`
+      );
+    }
+  },
+};
+
+// ---------------------------------------------------------------------------
 // Vite config
 // ---------------------------------------------------------------------------
 export default defineConfig({
   plugins: [
     workspaceResolverPlugin,
     mjsJsxPlugin,
+    nodeWasmPatchPlugin,
     vinext(),
+
     cloudflare({
       viteEnvironment: {
         name: 'rsc',
         childEnvironments: ['ssr'],
       },
-    }),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }) as any,
   ],
   resolve: {
     alias: {
