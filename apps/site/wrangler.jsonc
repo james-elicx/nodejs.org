@@ -15,10 +15,10 @@
   "images": {
     "binding": "IMAGES",
   },
-  // "kv_namespaces": [
-  //   {
-  //     "binding": "VINEXT_CACHE",
-  //     "id": "<your-kv-namespace-id>"
-  //   }
-  // ]
+  "kv_namespaces": [
+    {
+      "binding": "VINEXT_CACHE",
+      "id": "c3b96b494a7149468a2918f92b55ad7d",
+    },
+  ],
 }
