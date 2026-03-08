@@ -16,6 +16,7 @@
     "dev:vinext": "cross-env NODE_NO_WARNINGS=1 vinext dev",
     "build:vinext": "cross-env NODE_NO_WARNINGS=1 vinext build",
     "start:vinext": "cross-env NODE_NO_WARNINGS=1 vinext start",
+    "deploy:vinext": "OPEN_NEXT_DEPLOY=true pnpm --filter @node-core/website exec vinext deploy",
     "lint": "node --run lint:js && node --run lint:css && node --run lint:md",
     "lint:fix": "node --run lint:js:fix && node --run lint:css:fix && node --run lint:md:fix",
     "lint:css": "stylelint \"**/*.css\" --allow-empty-input --cache --cache-strategy=content --cache-location=.stylelintcache",

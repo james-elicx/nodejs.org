@@ -1,12 +1,16 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "nodejs-website",
-  "compatibility_date": "2026-03-06",
+  "compatibility_date": "2026-03-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "./worker/index.ts",
   "assets": {
     "not_found_handling": "none",
     "binding": "ASSETS",
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
   },
   "images": {
     "binding": "IMAGES",
