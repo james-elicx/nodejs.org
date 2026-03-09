@@ -1,4 +1,4 @@
-import { createHighlighterCoreSync } from '@shikijs/core';
+import { createHighlighterCore } from '@shikijs/core';
 import shikiNordTheme from 'shiki/themes/nord.mjs';
 
 const DEFAULT_THEME = {
@@ -37,15 +37,18 @@ export const getLanguageByName = (language, langs) => {
  * @param {Object} params - Parameters for highlighter creation.
  * @param {import('@shikijs/core').HighlighterCoreOptions} [params.coreOptions] - Core options for the highlighter.
  * @param {import('@shikijs/core').CodeToHastOptions} [params.highlighterOptions] - Additional options for highlighting.
- * @returns {SyntaxHighlighter}
+ * @returns {Promise<SyntaxHighlighter>}
  */
-const createHighlighter = ({ coreOptions = {}, highlighterOptions = {} }) => {
+const createHighlighter = async ({
+  coreOptions = {},
+  highlighterOptions = {},
+}) => {
   const options = {
     themes: [DEFAULT_THEME],
     ...coreOptions,
   };
 
-  const shiki = createHighlighterCoreSync(options);
+  const shiki = await createHighlighterCore(options);
 
   const theme = options.themes[0];
 

@@ -15,10 +15,7 @@ import { DEFAULT_CATEGORY_OG_TYPE } from './next.constants.mjs';
 import { ENABLE_STATIC_EXPORT } from './next.constants.mjs';
 import { IS_DEV_ENV } from './next.constants.mjs';
 import { PAGE_METADATA } from './next.dynamic.constants.mjs';
-import {
-  getMarkdownFiles,
-  markdownContentsByLocaleAndFile,
-} from './next.helpers.mjs';
+import { getMarkdownContent, getMarkdownFiles } from './next.helpers.mjs';
 import { siteConfig } from './next.json.mjs';
 
 // This is the combination of the Application Base URL and Base PATH
@@ -115,11 +112,10 @@ const getDynamicRouter = async () => {
         return { source: fileContent, filename };
       }
 
-      // Look up the file contents from the import.meta.glob map.
-      // This was populated at Vite build/dev startup so it works in every
-      // runtime environment including the RSC worker where node:fs is shimmed.
-      const fileLanguageContent =
-        markdownContentsByLocaleAndFile[`${locale}/${filename}`];
+      // Lazily load the file contents via the dynamic import thunk from
+      // the import.meta.glob map. Only the requested file is fetched —
+      // no other content is loaded into the Worker bundle at build time.
+      const fileLanguageContent = await getMarkdownContent(locale, filename);
 
       // No cache hit exists, so we check if the localized file actually
       // exists within our file system and if it does we set it on the cache

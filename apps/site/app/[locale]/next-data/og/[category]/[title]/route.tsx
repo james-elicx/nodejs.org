@@ -1,7 +1,4 @@
-import HexagonGrid from '@node-core/ui-components/Icons/HexagonGrid';
-import JsWhiteIcon from '@node-core/ui-components/Icons/Logos/JsWhite';
 import { defaultLocale } from '@node-core/website-i18n';
-import { ImageResponse } from 'next/og';
 
 import { DEFAULT_CATEGORY_OG_TYPE } from '#site/next.constants.mjs';
 
@@ -25,6 +22,13 @@ type StaticParams = {
 // @see https://nextjs.org/docs/app/building-your-application/routing/router-handlers
 export const GET = async (_: Request, props: StaticParams) => {
   const params = await props.params;
+
+  const [{ ImageResponse }, { default: HexagonGrid }, { default: JsWhiteIcon }] =
+    await Promise.all([
+      import('next/og'),
+      import('@node-core/ui-components/Icons/HexagonGrid'),
+      import('@node-core/ui-components/Icons/Logos/JsWhite'),
+    ]);
 
   const categoryColour =
     params.category in CATEGORY_TO_THEME_COLOUR_MAP

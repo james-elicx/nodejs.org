@@ -19,20 +19,25 @@ const globCacheByPath = new Map();
  */
 export const getRelativePath = path => fileURLToPath(new URL('.', path));
 
-// Eagerly import all markdown files under pages/ at build time via Vite's
-// import.meta.glob. This runs in real Node.js land during the Vite transform
-// step, so the file contents are inlined into the module graph — no virtual
-// module plugin, no runtime readFile, no node:fs required.
+// Lazily import all markdown files under pages/ via Vite's import.meta.glob.
 //
-// The glob key is a path relative to this file, e.g.:
+// Using { eager: false } (the default) means Vite emits each file as a
+// separate async chunk instead of inlining every file as a string literal
+// inside the Worker bundle. With 1,000+ markdown/MDX files this was
+// responsible for ~17 MB of raw content being bundled directly into
+// worker-entry, ballooning cold-start parse time on Cloudflare Workers.
+//
+// The glob map now contains { [path]: () => Promise<{ default: string }> }
+// — i.e. a thunk per file that is only evaluated when that specific page is
+// actually requested. Cloudflare will serve the emitted chunks from the
+// ASSETS binding, so there is no node:fs dependency at runtime.
+//
+// Glob keys are relative to this file, e.g.:
 //   "./pages/en/index.mdx"
 //   "./pages/en/learn/getting-started/introduction-to-nodejs.md"
-//
-// { eager: true, query: '?raw' } inlines each file as a plain string, the
-// same way ?raw imports work in Vite (no MDX compilation here — that happens
-// later in the compiler pipeline).
+/** @type {Record<string, () => Promise<{ default: string }>>} */
 const allMarkdownModules = import.meta.glob('./pages/**/*.{md,mdx}', {
-  eager: true,
+  eager: false,
   query: '?raw',
 });
 
@@ -78,33 +83,62 @@ const filesByLocale = (() => {
 })();
 
 /**
- * Build a map of "locale/relative-file" → raw source string from the glob result.
- * Computed once and reused across calls.
+ * Map of "locale/relative-file" → async loader thunk.
  *
- * @type {Record<string, string>}
+ * Previously this map held the fully-resolved raw string for every markdown
+ * file, which meant all ~1,000 files were inlined into the Worker bundle at
+ * build time (~17 MB of raw content). Now each entry is a zero-argument
+ * async function that dynamically imports the file only when it is needed.
+ *
+ * Callers that previously did a synchronous lookup:
+ *   markdownContentsByLocaleAndFile[key]  →  string | undefined
+ *
+ * must now await the loader:
+ *   await getMarkdownContent(locale, file)  →  string | undefined
+ *
+ * Use the exported `getMarkdownContent` helper below rather than accessing
+ * this map directly.
+ *
+ * @type {Record<string, () => Promise<{ default: string }>>}
  */
 export const markdownContentsByLocaleAndFile = (() => {
-  /** @type {Record<string, string>} */
+  /** @type {Record<string, () => Promise<{ default: string }>>} */
   const map = {};
-  for (const [key, mod] of Object.entries(allMarkdownModules)) {
+  for (const [key, loader] of Object.entries(allMarkdownModules)) {
     const { locale, file } = parseGlobKey(key);
     if (!file) continue;
-    // When query: '?raw' is used, the default export is the raw string
-    const source = /** @type {any} */ (mod).default ?? mod;
-    if (typeof source === 'string') {
-      map[`${locale}/${file}`] = source;
-    }
+    map[`${locale}/${file}`] = loader;
   }
   return map;
 })();
 
 /**
+ * Resolves the raw markdown source for a given locale + file path.
+ *
+ * Lazily invokes the Vite-generated dynamic import thunk so that only the
+ * requested file is fetched — no other content is loaded into memory.
+ *
+ * @param {string} locale — e.g. "en"
+ * @param {string} file   — relative path within the locale dir, e.g. "blog/release/v20.md"
+ * @returns {Promise<string | undefined>}
+ */
+export async function getMarkdownContent(locale, file) {
+  const loader = markdownContentsByLocaleAndFile[`${locale}/${file}`];
+  if (!loader) return undefined;
+  const mod = await loader();
+  const source = /** @type {any} */ (mod).default ?? mod;
+  return typeof source === 'string' ? source : undefined;
+}
+
+/**
  * This method is responsible for retrieving a glob of all files that exist
  * within a given language directory.
  *
- * Uses import.meta.glob results (populated at Vite build/dev startup) instead
- * of runtime filesystem calls, so it works correctly in every environment
- * including the Vite RSC worker where node:fs is shimmed by unenv.
+ * Uses the keys from the lazy import.meta.glob map (populated at Vite
+ * build/dev startup) instead of runtime filesystem calls, so it works
+ * correctly in every environment including the Vite RSC worker where node:fs
+ * is shimmed by unenv. Only the file list (keys) is consulted here — the
+ * actual file contents are NOT loaded until a specific page is requested.
  *
  * Note that we ignore the blog directory for static builds as otherwise
  * generating that many pages would be too much for the build process to handle.

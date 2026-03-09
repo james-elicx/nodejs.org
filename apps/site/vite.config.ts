@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
+import { visualizer } from 'rollup-plugin-visualizer';
 import vinext from 'vinext';
 import { transformWithEsbuild, defineConfig } from 'vite';
 
@@ -135,6 +136,46 @@ export default defineConfig({
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any,
+
+    // Bundle analysis — only active when the ANALYZE env var is set.
+    //
+    // Usage (target the worker/SSR entry):
+    //   ANALYZE=ssr pnpm build:vinext
+    //
+    // Other valid values: rsc, client
+    //   ANALYZE=rsc pnpm build:vinext
+    //   ANALYZE=client pnpm build:vinext
+    //
+    // The report is written to dist/stats.<env>.html and opened automatically
+    // in your default browser once the build finishes.
+    //
+    // rollup-plugin-visualizer works by hooking into Rollup/Rolldown's
+    // generateBundle phase. In a multi-environment Vite build each environment
+    // runs its own Rolldown pipeline, so the plugin will see whichever
+    // environment(s) emit chunks. Setting ANALYZE to the environment name you
+    // care about keeps the filename unambiguous.
+    ...(process.env.ANALYZE
+      ? [
+          visualizer({
+            // Place the report in dist/ at the root of the app so it is easy
+            // to find regardless of which sub-directory the env writes to.
+            filename: `dist/stats.${process.env.ANALYZE}.html`,
+            // Treemap gives the most useful at-a-glance breakdown of what is
+            // taking up space inside the bundle.
+            template: 'treemap',
+            // Open the finished report in the browser automatically.
+            open: true,
+            // Show gzip-compressed sizes alongside raw sizes — gives a more
+            // realistic idea of over-the-wire cost.
+            gzipSize: true,
+            // Show brotli-compressed sizes too; Cloudflare serves brotli by
+            // default so this is the most relevant metric for Workers bundles.
+            brotliSize: true,
+            // Title shown at the top of the HTML report.
+            title: `Bundle analysis — ${process.env.ANALYZE} environment`,
+          }),
+        ]
+      : []),
   ],
 
   // next-intl and use-intl ship separate react-server / react-client builds

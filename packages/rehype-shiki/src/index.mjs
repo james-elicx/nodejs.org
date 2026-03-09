@@ -1,20 +1,4 @@
-// Keep all imports at the top
-import cLanguage from 'shiki/langs/c.mjs';
-import coffeeScriptLanguage from 'shiki/langs/coffeescript.mjs';
-import cPlusPlusLanguage from 'shiki/langs/cpp.mjs';
-import diffLanguage from 'shiki/langs/diff.mjs';
-import dockerLanguage from 'shiki/langs/docker.mjs';
-import httpLanguage from 'shiki/langs/http.mjs';
-import iniLanguage from 'shiki/langs/ini.mjs';
-import javaScriptLanguage from 'shiki/langs/javascript.mjs';
-import jsonLanguage from 'shiki/langs/json.mjs';
-import powershellLanguage from 'shiki/langs/powershell.mjs';
-import shellScriptLanguage from 'shiki/langs/shellscript.mjs';
-import shellSessionLanguage from 'shiki/langs/shellsession.mjs';
-import typeScriptLanguage from 'shiki/langs/typescript.mjs';
-import yamlLanguage from 'shiki/langs/yaml.mjs';
-
-import createHighlighter, { getLanguageByName } from '#rs/highlighter.mjs';
+import createHighlighter from '#rs/highlighter.mjs';
 
 /**
  * @typedef {Object} HighlighterOptions
@@ -55,28 +39,28 @@ async function getTransformers({ twoslash = false, twoslashOptions }) {
   return transformers;
 }
 
+/** @type {Array<() => Promise<import('@shikijs/types').LanguageRegistration[]>>} */
 export const LANGS = [
-  ...cLanguage,
-  ...coffeeScriptLanguage,
-  ...cPlusPlusLanguage,
-  ...diffLanguage,
-  ...dockerLanguage,
-  ...httpLanguage,
-  ...iniLanguage,
-  {
-    ...javaScriptLanguage[0],
-    aliases: javaScriptLanguage[0].aliases.concat('cjs', 'mjs'),
-  },
-  ...jsonLanguage,
-  ...powershellLanguage,
-  ...shellScriptLanguage,
-  ...shellSessionLanguage,
-  ...typeScriptLanguage,
-  ...yamlLanguage,
+  () => import('shiki/langs/c.mjs').then(m => m.default),
+  () => import('shiki/langs/coffeescript.mjs').then(m => m.default),
+  () => import('shiki/langs/cpp.mjs').then(m => m.default),
+  () => import('shiki/langs/diff.mjs').then(m => m.default),
+  () => import('shiki/langs/docker.mjs').then(m => m.default),
+  () => import('shiki/langs/http.mjs').then(m => m.default),
+  () => import('shiki/langs/ini.mjs').then(m => m.default),
+  () =>
+    import('shiki/langs/javascript.mjs').then(m => [
+      { ...m.default[0], aliases: m.default[0].aliases.concat('cjs', 'mjs') },
+    ]),
+  () => import('shiki/langs/json.mjs').then(m => m.default),
+  () => import('shiki/langs/powershell.mjs').then(m => m.default),
+  () => import('shiki/langs/shellscript.mjs').then(m => m.default),
+  () => import('shiki/langs/shellsession.mjs').then(m => m.default),
+  () => import('shiki/langs/typescript.mjs').then(m => m.default),
+  () => import('shiki/langs/yaml.mjs').then(m => m.default),
 ];
 
-export const getLanguageDisplayName = language =>
-  getLanguageByName(language, LANGS)?.displayName ?? language;
+export const getLanguageDisplayName = language => language;
 
 /**
  * Creates and configures a syntax highlighter
