@@ -1,0 +1,50 @@
+pnpm-workspace.yaml
+  s_16583bdcc5266f::t_6a2df6d05eadd0 21-24
+patches/vinext@1.0.0-beta.4.patch
+  s_16583bdcc5266f::t_a147bde24b7e6b 1-84
+pnpm-lock.yaml
+  s_16583bdcc5266f::t_ad9fe18adb7316 230-232
+  s_16583bdcc5266f::t_000f9a18e5a988 233,358,439,12293,12295,17701-17702
+apps/site/app/[locale]/[...path]/page.tsx
+  s_16583bdcc5266f::t_4a4b6fbe403df9 15,33-35,39-40,51-54
+apps/site/app/[locale]/blog/[...path]/page.tsx
+  s_4e5cdbd1a64203::t_02df10e1005c58 1,5,24-26,29-30,34-43
+apps/site/app/[locale]/download/archive/[version]/page.tsx
+  s_4e5cdbd1a64203::t_462a4ed75c3a5a 1,7,24-26,29-30,36-45
+apps/site/app/[locale]/page.tsx
+  s_16583bdcc5266f::t_1b4388f0626dfa 6,24-26,32-33,38-41
+apps/site/next.dynamic.mjs
+  s_4e5cdbd1a64203::t_dbdb865d356215 76,89-90,92-94,106-109
+apps/site/wrangler.jsonc
+  s_16583bdcc5266f::t_3906c2d6972c7f 7,16-26
+apps/site/next.constants.mjs
+  s_16583bdcc5266f::t_72298b2a45552d 29-36
+apps/site/package.json
+  s_16583bdcc5266f::t_a1bb2fd1c85bcc 15
+patches/@vinext+cloudflare@1.0.0-beta.4.patch
+  s_16583bdcc5266f::t_71342dec9f0b5d 1-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "30ca20133337398e6707bb2cb21df450d6d9da04",
+  "prompts": {},
+  "sessions": {
+    "s_16583bdcc5266f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa8f6-d8c6-7142-8b5f-473b432d479b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "James <james@eli.cx>"
+    },
+    "s_4e5cdbd1a64203": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019f8142-0c4c-77a2-b87c-e661ae843694",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "James <james@eli.cx>"
+    }
+  }
+}
