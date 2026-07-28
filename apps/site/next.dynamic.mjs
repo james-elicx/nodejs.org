@@ -73,7 +73,7 @@ const getDynamicRouter = async () => {
       pathname = pathname.substring(0, pathname.length - 1);
     }
 
-    pathname = normalize(pathname).replace('.', '');
+    pathname = normalize(pathname).replace(/^\.(?:[\\/]|$)/, '');
 
     // We map the pathname to the filename to be able to quickly
     // resolve the filename for a given pathname
@@ -86,8 +86,12 @@ const getDynamicRouter = async () => {
 
    * @returns {Promise<Array<string>>}
    */
+  // The archive MDX file is the content template for /download/archive/[version],
+  // not a standalone route.
   const getAllRoutes = async () =>
-    [...pathnameToFilename.keys()].filter(pathname => pathname.length);
+    [...pathnameToFilename.keys()].filter(
+      pathname => pathname.length && pathname !== 'download/archive'
+    );
 
   /**
    * This method attempts to retrieve either a localized Markdown file
@@ -99,7 +103,10 @@ const getDynamicRouter = async () => {
    * @returns {Promise<{ source: string; filename: string }>}
    */
   const _getMarkdownFile = async (locale = '', pathname = '') => {
-    const normalizedPathname = normalize(pathname).replace('.', '');
+    const normalizedPathname = normalize(pathname).replace(
+      /^\.(?:[\\/]|$)/,
+      ''
+    );
 
     // This verifies if the given pathname actually exists on our Map
     // meaning that the route exists on the website and can be rendered

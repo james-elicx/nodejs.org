@@ -27,6 +27,14 @@ export const ENABLE_STATIC_EXPORT =
   process.env.NEXT_PUBLIC_STATIC_EXPORT === true;
 
 /**
+ * Enables build-time route discovery for vinext ISR cache warming without
+ * switching Next.js into static export mode.
+ */
+export const ENABLE_VINEXT_BUILD_TIME_ISR =
+  process.env.VINEXT_BUILD_TIME_ISR === 'true' ||
+  process.env.VINEXT_BUILD_TIME_ISR === true;
+
+/**
  * This is used to ensure that pages are Static Export for all locales or only
  * in the default (`en`) locale.
  *

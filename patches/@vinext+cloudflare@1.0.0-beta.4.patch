@@ -1,0 +1,20 @@
+diff --git a/dist/deploy.js b/dist/deploy.js
+--- a/dist/deploy.js
++++ b/dist/deploy.js
+@@ -383,6 +383,7 @@ async function deployWithCdnWarmup(root, paths, options) {
+ 			warmedBeforePromotion = true;
+ 		} else if (options.warmCdnStrict) throw new Error("CDN warmup failed: pre-traffic warmup needs a production URL and Worker name for version overrides. Configure a route/custom domain and Worker name, or rerun without --warm-cdn-strict. " + getStagedVersionCleanupNote());
+-	} else console.warn("  CDN warmup: pre-traffic version override skipped because the current deployment is not a single 100% version.");
++	} else if (options.warmCdnStrict) throw new Error("CDN warmup failed: pre-traffic warmup requires a current single-version 100% deployment. " + getStagedVersionCleanupNote());
++	else console.warn("  CDN warmup: pre-traffic version override skipped because the current deployment is not a single 100% version.");
+ 	const deployed = runWranglerVersionDeploy(root, [{
+ 		versionId: upload.versionId,
+ 		percentage: 100
+@@ -561,6 +561,7 @@ async function deploy(options) {
+ 			warmCdnRetries: options.warmCdnRetries,
+ 			warmCdnStrict: options.warmCdnStrict
+ 		});
++		else if (options.warmCdnStrict) throw new Error("CDN warmup failed: no build-discovered paths found.");
+ 		else {
+ 			console.log("\n  CDN warmup skipped: no build-discovered paths found.");
+ 			url = await runWranglerDeploy(root, wranglerOptions);

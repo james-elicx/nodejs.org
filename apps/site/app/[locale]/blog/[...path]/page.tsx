@@ -1,7 +1,8 @@
-import { defaultLocale } from '@node-core/website-i18n';
+import { availableLocaleCodes, defaultLocale } from '@node-core/website-i18n';
 import { notFound } from 'next/navigation';
 
 import { ENABLE_STATIC_EXPORT } from '#site/next.constants.mjs';
+import { ENABLE_VINEXT_BUILD_TIME_ISR } from '#site/next.constants.mjs';
 import { BLOG_DYNAMIC_ROUTES } from '#site/next.dynamic.constants.mjs';
 import * as basePage from '#site/next.dynamic.page.mjs';
 
@@ -20,20 +21,26 @@ export const generateMetadata = ({ params }: PageParams) =>
   basePage.generateMetadata({ params, prefix: 'blog' });
 
 // Generates all possible static paths based on the locales and environment configuration
-// - Returns an empty array if static export is disabled (`ENABLE_STATIC_EXPORT` is false)
-// - If `ENABLE_STATIC_EXPORT_LOCALE` is true, generates paths for all available locales
-// - Otherwise, generates paths only for the default locale
+// - Returns an empty array unless static export or vinext build-time ISR is enabled
+// - For vinext build-time ISR, generates paths for all available locales
+// - Otherwise, preserves the static export's default-locale-only behaviour
 // @see https://nextjs.org/docs/app/api-reference/functions/generate-static-params
 export const generateStaticParams = async () => {
-  // Return an empty array if static export is disabled
-  if (!ENABLE_STATIC_EXPORT) {
+  // Return an empty array unless build-time route generation is enabled
+  if (!ENABLE_STATIC_EXPORT && !ENABLE_VINEXT_BUILD_TIME_ISR) {
     return [];
   }
 
-  return BLOG_DYNAMIC_ROUTES.map(pathname => ({
-    locale: defaultLocale.code,
-    path: pathname.split('/'),
-  }));
+  const locales = ENABLE_VINEXT_BUILD_TIME_ISR
+    ? availableLocaleCodes
+    : [defaultLocale.code];
+
+  return locales.flatMap(locale =>
+    BLOG_DYNAMIC_ROUTES.map(pathname => ({
+      locale,
+      path: pathname.split('/'),
+    }))
+  );
 };
 
 // This method parses the current pathname and does any sort of modifications needed on the route

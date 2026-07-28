@@ -1,0 +1,84 @@
+diff --git a/dist/plugins/ignore-dynamic-requests.js b/dist/plugins/ignore-dynamic-requests.js
+--- a/dist/plugins/ignore-dynamic-requests.js
++++ b/dist/plugins/ignore-dynamic-requests.js
+@@ -43,6 +43,21 @@ function stringValue(node) {
+ 	if ((node.type === "Literal" || node.type === "StringLiteral") && typeof node.value === "string") return node.value;
+ 	return null;
+ }
++function stringFromCharCodeValue(value, scope) {
++	const node = unwrapExpression(value);
++	if (node?.type !== "CallExpression") return null;
++	const callee = unwrapExpression(node.callee);
++	const object = callee?.type === "MemberExpression" ? unwrapExpression(callee.object) : null;
++	const property = callee?.type === "MemberExpression" ? unwrapExpression(callee.property) : null;
++	if (callee?.type !== "MemberExpression" || callee.computed === true || !isIdentifierNamed(object, "String") || hasAstBinding(scope, "String") || !isIdentifierNamed(property, "fromCharCode")) return null;
++	const codeUnits = [];
++	for (const argument of nodeArray(node.arguments)) {
++		const argumentNode = unwrapExpression(argument);
++		if (argumentNode?.type !== "Literal" || typeof argumentNode.value !== "number" || !Number.isInteger(argumentNode.value) || argumentNode.value < 0 || argumentNode.value > 65535) return null;
++		codeUnits.push(argumentNode.value);
++	}
++	return String.fromCharCode(...codeUnits);
++}
+ function isUnboundNumericGlobal(node, scope) {
+ 	return node.type === "Identifier" && typeof node.name === "string" && !hasAstBinding(scope, node.name) && (isIdentifierNamed(node, "NaN") || isIdentifierNamed(node, "Infinity"));
+ }
+@@ -479,15 +494,23 @@ function transformVeryDynamicRequests(code, id) {
+ 			};
+ 			collectBindingNames(node.id, scope.bindings);
+ 		}
+-		if (node.type === "CallExpression" && hasRange(node)) {
+-			const callee = unwrapExpression(node.callee);
+-			const argumentsList = nodeArray(node.arguments);
+-			if (isIdentifierNamed(callee, "require") && !hasAstBinding(scope, "require") && argumentsList.length === 1 && astNode(argumentsList[0])?.type !== "SpreadElement" && !hasDynamicRequestIgnoreDirective(code, node, argumentsList[0]) && !requestHasStaticPart(argumentsList[0], scope)) {
+-				output.overwrite(node.start, node.end, dynamicRequireReplacement());
+-				changed = true;
+-				return;
++		if (node.type === "CallExpression" && hasRange(node)) {
++			const callee = unwrapExpression(node.callee);
++			const argumentsList = nodeArray(node.arguments);
++			if (isIdentifierNamed(callee, "require") && !hasAstBinding(scope, "require") && argumentsList.length === 1 && astNode(argumentsList[0])?.type !== "SpreadElement" && !hasDynamicRequestIgnoreDirective(code, node, argumentsList[0])) {
++				const resolvedRequest = stringFromCharCodeValue(argumentsList[0], scope);
++				if (resolvedRequest !== null && hasRange(argumentsList[0])) {
++					output.overwrite(argumentsList[0].start, argumentsList[0].end, JSON.stringify(resolvedRequest));
++					changed = true;
++					return;
++				}
++				if (!requestHasStaticPart(argumentsList[0], scope)) {
++					output.overwrite(node.start, node.end, dynamicRequireReplacement());
++					changed = true;
++					return;
++				}
+ 			}
+ 		}
+ 		if (node.type === "ImportExpression" && hasRange(node) && !hasDynamicRequestIgnoreDirective(code, node, node.source) && !requestHasStaticPart(node.source, scope)) {
+ 			output.overwrite(node.start, node.end, dynamicImportReplacement());
+ 			changed = true;
+diff --git a/dist/server/prod-server.js b/dist/server/prod-server.js
+--- a/dist/server/prod-server.js
++++ b/dist/server/prod-server.js
+@@ -30,6 +30,7 @@
+ import fs from "node:fs";
+ import fsp from "node:fs/promises";
+ import { pathToFileURL } from "node:url";
++import { createRequire } from "node:module";
+ import { Readable, pipeline } from "node:stream";
+ import zlib from "node:zlib";
+ import { createServer } from "node:http";
+@@ -121,6 +122,7 @@
+ 	bareServerEntryMtimes.set(href, mtime);
+ }
+ async function importServerEntryModule(entryPath) {
++	if (typeof globalThis.require === "undefined") globalThis.require = createRequire(pathToFileURL(entryPath));
+ 	return import(resolveServerEntryImportUrl(entryPath));
+ }
+ /** Convert a Node.js IncomingMessage into a ReadableStream for Web Request body. */
+@@ -833,7 +835,7 @@
+ 	}
+ 	if (entry && typeof entry === "object" && "fetch" in entry) {
+ 		const workerEntry = entry;
+-		if (typeof workerEntry.fetch === "function") return (request, ctx) => Promise.resolve(workerEntry.fetch(request, void 0, ctx));
++		if (typeof workerEntry.fetch === "function") return (request, ctx) => Promise.resolve(workerEntry.fetch(request, process.env, ctx));
+ 	}
+ 	console.error("[vinext] App Router entry must export either a default handler function or a Worker-style default export with fetch()");
+ 	process.exit(1);
