@@ -21,6 +21,29 @@
         "TURBOPACK_STATS"
       ]
     },
+    "dev:vinext": {
+      "dependsOn": [
+        "build:blog-data",
+        "build:fs-assets",
+        "build:twoslash-fsmap",
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "NEXT_PUBLIC_STATIC_EXPORT",
+        "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_DIST_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_DATA_URL",
+        "TURBO_CACHE",
+        "TURBO_TELEMETRY_DISABLED"
+      ]
+    },
     "build": {
       "dependsOn": ["build:blog-data", "build:twoslash-fsmap", "^build"],
       "inputs": [
@@ -28,7 +51,9 @@
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "!next-env.d.ts",
+        "!vite.config.ts"
       ],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
@@ -44,6 +69,38 @@
         "TURBO_CACHE",
         "TURBO_TELEMETRY_DISABLED",
         "TURBOPACK_STATS",
+        "ENABLE_EXPERIMENTAL_COREPACK"
+      ]
+    },
+    "build:vinext": {
+      "dependsOn": [
+        "build:blog-data",
+        "build:fs-assets",
+        "build:twoslash-fsmap",
+        "^build"
+      ],
+      "inputs": [
+        "{app,components,hooks,i18n,layouts,mdx,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
+        "{app,components,layouts,pages,styles}/**/*.css",
+        "{next-data,scripts,i18n}/**/*.{mjs,json}",
+        "{app,pages}/**/*.{mdx,md}",
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "wrangler.jsonc",
+        "!next-env.d.ts"
+      ],
+      "outputs": ["dist/**"],
+      "env": [
+        "VERCEL_ENV",
+        "VERCEL_URL",
+        "NEXT_PUBLIC_STATIC_EXPORT",
+        "NEXT_PUBLIC_STATIC_EXPORT_LOCALE",
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_DIST_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_DATA_URL",
+        "TURBO_CACHE",
+        "TURBO_TELEMETRY_DISABLED",
         "ENABLE_EXPERIMENTAL_COREPACK"
       ]
     },
@@ -65,13 +122,28 @@
         "TURBOPACK_STATS"
       ]
     },
+    "start:vinext": {
+      "cache": false,
+      "persistent": true,
+      "env": [
+        "NEXT_PUBLIC_BASE_URL",
+        "NEXT_PUBLIC_DIST_URL",
+        "NEXT_PUBLIC_DOCS_URL",
+        "NEXT_PUBLIC_BASE_PATH",
+        "NEXT_PUBLIC_DATA_URL",
+        "TURBO_CACHE",
+        "TURBO_TELEMETRY_DISABLED"
+      ]
+    },
     "deploy": {
       "inputs": [
         "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "!next-env.d.ts",
+        "!vite.config.ts"
       ],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
@@ -94,7 +166,8 @@
         "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "public/**/*.{ts,js,json}",
-        "*.{json,ts,tsx}"
+        "*.{json,ts,tsx}",
+        "!next-env.d.ts"
       ]
     },
     "lint:md": {
@@ -111,6 +184,9 @@
     "lint:types": {
       "cache": false
     },
+    "lint:types:vinext": {
+      "cache": false
+    },
     "format": {
       "cache": false
     },
@@ -121,7 +197,9 @@
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "!next-env.d.ts",
+        "!vite.config.ts"
       ],
       "outputs": ["coverage/**", "junit.xml"]
     },
@@ -137,42 +215,57 @@
         "ENABLE_EXPERIMENTAL_COREPACK"
       ]
     },
+    "build:fs-assets": {
+      "inputs": ["{pages,snippets,scripts/fs-assets}/**/*"],
+      "outputs": [".vinext-fs-assets/**"]
+    },
     "build:twoslash-fsmap": {
       "inputs": ["scripts/twoslash-fsmap/**", "../../pnpm-lock.yaml"],
       "outputs": ["generated/twoslash-fsmap.json"]
     },
     "cloudflare:build:worker": {
-      "dependsOn": ["build:blog-data", "build:twoslash-fsmap", "^build"],
+      "dependsOn": [
+        "build:blog-data",
+        "build:fs-assets",
+        "build:twoslash-fsmap",
+        "^build"
+      ],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
+        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "wrangler.jsonc",
+        "!next-env.d.ts"
       ],
-      "outputs": [".open-next/**"]
+      "outputs": ["dist/**"]
     },
     "cloudflare:preview": {
       "dependsOn": ["cloudflare:build:worker"],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
+        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "wrangler.jsonc",
+        "!next-env.d.ts"
       ],
-      "outputs": [".open-next/**"]
+      "outputs": ["dist/**"]
     },
     "cloudflare:deploy": {
       "dependsOn": ["cloudflare:build:worker"],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,middlewares,pages,providers,types,util}/**/*.{ts,tsx}",
+        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
-        "*.{md,mdx,json,ts,tsx,mjs,yml}"
+        "*.{md,mdx,json,ts,tsx,mjs,yml}",
+        "wrangler.jsonc",
+        "!next-env.d.ts"
       ],
-      "outputs": [".open-next/**"]
+      "outputs": ["dist/**"]
     },
     "scripts:release-post": {
       "cache": false

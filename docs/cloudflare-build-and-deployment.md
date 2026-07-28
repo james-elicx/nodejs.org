@@ -1,81 +1,91 @@
 # Cloudflare Build and Deployment
 
-The Node.js Website can be built using the [OpenNext Cloudflare adapter](https://opennext.js.org/cloudflare). Such build generates a [Cloudflare Worker](https://www.cloudflare.com/en-gb/developer-platform/products/workers/) that can be deployed on the [Cloudflare](https://www.cloudflare.com) network.
+The Node.js Website keeps its existing Next.js build and can also use
+[vinext](https://github.com/cloudflare/vinext) to run the same App Router
+application on Vite and deploy it to
+[Cloudflare Workers](https://developers.cloudflare.com/workers/).
 
-## Configurations
+The two build paths are intentionally separate. `pnpm build`, `pnpm dev`, and
+`pnpm start` continue to use Next.js and cache `.next`; the corresponding
+`*:vinext` commands use vinext and cache `apps/site/dist`.
 
-There are two key configuration files related to Cloudflare deployments:
+vinext is still under active development. Changes to routes, caching, images,
+MDX, or the Worker runtime should be tested with both a production build and a
+local Wrangler preview before deployment.
 
-### Wrangler Configuration
+## Configuration
 
-This file defines the settings for the Cloudflare Worker, which serves the website.
+The Cloudflare deployment has three main configuration files:
 
-For more details, refer to the [Wrangler documentation](https://developers.cloudflare.com/workers/wrangler/configuration/).
+- [`apps/site/vite.config.ts`](../apps/site/vite.config.ts) registers vinext,
+  the Cloudflare Vite plugin, Workers Cache-backed page caching, and Cloudflare
+  Images optimization.
+- [`apps/site/wrangler.jsonc`](../apps/site/wrangler.jsonc) defines the Worker,
+  static assets, Images binding, Workers Cache, observability, and version
+  metadata.
+- [`apps/site/cloudflare/worker-entrypoint.ts`](../apps/site/cloudflare/worker-entrypoint.ts)
+  wraps vinext's fetch handler with Sentry instrumentation.
 
-Key configurations include:
+`next.config.mjs` remains the shared compatibility configuration, including the
+existing `next-intl` plugin wrapper used by Next.js and vinext.
 
-- `main`: Points to a custom worker entry point ([`site/cloudflare/worker-entrypoint.ts`](../apps/site/cloudflare/worker-entrypoint.ts)) that wraps the OpenNext-generated worker (see [Custom Worker Entry Point](#custom-worker-entry-point) and [Sentry](#sentry) below).
-- `account_id`: Specifies the Cloudflare account ID. This is not required for local previews but is necessary for deployments. You can obtain an account ID for free by signing up at [dash.cloudflare.com](https://dash.cloudflare.com/login).
-  - This is set to `07be8d2fbc940503ca1be344714cb0d1`, which is the ID of a Cloudflare account controlled by Node.js.
-- `build`: Defines the build command to generate the Node.js filesystem polyfills required for the application to run on Cloudflare Workers. This uses the [`@flarelabs/wrangler-build-time-fs-assets-polyfilling`](https://github.com/flarelabs-net/wrangler-build-time-fs-assets-polyfilling) package.
-- `alias`: Maps aliases for the Node.js filesystem polyfills generated during the build process.
-- `r2_buckets`: Contains a single R2 binding definition for `NEXT_INC_CACHE_R2_BUCKET`. This is used to implement the Next.js incremental cache.
-  - This is set up to a R2 bucket in the aforementioned Cloudflare account.
-- `durable_objects`: Contains a single DurableObject binding definition for `NEXT_CACHE_DO_QUEUE`. This is used to implement the Open-next cache queue.
-- `version_metadata`: Contains a binding for `CF_VERSION_METADATA`, used for Sentry release configuration (see [Sentry](#sentry) below).
+### Caching
 
-### OpenNext Configuration
+Pages that opt into ISR are cached with the Cloudflare Workers Cache adapter.
+The migration does not configure a separate KV data cache because the site does
+not currently use `"use cache"`, `unstable_cache`, or another persistent data
+cache API.
 
-This is the configuration for the OpenNext Cloudflare adapter.
+Static routes are rendered and cached on demand. They are not all pre-rendered
+during the initial vinext build.
 
-For more details, refer to the [official OpenNext documentation](https://opennext.js.org/cloudflare/get-started#4-add-an-open-nextconfigts-file).
+### Filesystem-backed content
 
-### Skew Protection
+The site reads Markdown pages and code snippets through Node.js filesystem APIs.
+Workers do not have a normal filesystem, so
+`@flarelabs-net/wrangler-build-time-fs-assets-polyfilling` inventories those
+directories during the build, copies them into `dist/client`, and generates the
+asset-backed filesystem implementation used by server rendering.
 
-While Vercel offers [version skew protection](https://vercel.com/docs/skew-protection) out of the box, such mechanism is not present on the platform level in the Cloudflare network.
+The filesystem asset generation must run both before the vinext build (so the
+implementation can be bundled) and after it (because Vite recreates the output
+directory).
 
-Therefore, the OpenNext adapter provides its [own implementation](https://opennext.js.org/cloudflare/howtos/skew).
+### Images
 
-The OpenNext skew protection requires the following environment variables to be set in the Wrangler configuration file:
-
-- `CF_WORKER_NAME`
-  - The name of the worker (the same as `name`)
-- `CF_ACCOUNT_ID`
-  - The ID of the Cloudflare account (the same as `account_id`)
-- `CF_PREVIEW_DOMAIN`
-  - The preview domain for the worker. For Node.js, this is `nodejsorg`.
-
-Additionally, when deploying, an extra `CF_WORKERS_SCRIPTS_API_TOKEN` environment variable needs to be set to an API token that has the `Workers Scripts:Read` permission available on the Worker's account.
-
-### Image loader
-
-When deployed on the Cloudflare network a custom image loader is required. We set such loader in the Next.js config file when the `OPEN_NEXT_CLOUDFLARE` environment variable is set (which indicates that we're building the application for the Cloudflare deployment).
-
-The custom loader can be found at [`site/cloudflare/image-loader.ts`](../apps/site/cloudflare/image-loader.ts).
-
-For more details on this see: https://developers.cloudflare.com/images/transform-images/integrate-with-frameworks/#global-loader
-
-### Custom Worker Entry Point
-
-Instead of directly using the OpenNext-generated worker (`.open-next/worker.js`), the application uses a custom worker entry point at [`site/cloudflare/worker-entrypoint.ts`](../apps/site/cloudflare/worker-entrypoint.ts). This allows customizing the worker's behavior before requests are handled (currently used to integrate [Sentry](#sentry) error monitoring).
-
-The custom entry point imports the OpenNext-generated handler from `.open-next/worker.js` and re-exports the `DOQueueHandler` Durable Object needed by the application.
-
-For more details on custom workers, refer to the [OpenNext custom worker documentation](https://opennext.js.org/cloudflare/howtos/custom-worker).
+`next/image` requests use vinext's Cloudflare Images optimizer through the
+`IMAGES` binding. Remote source restrictions continue to come from
+`next.image.config.mjs` and the Cloudflare account's image-source policy.
 
 ### Sentry
 
-Error monitoring is provided by [Sentry](https://sentry.io/) via the [`@sentry/cloudflare`](https://www.npmjs.com/package/@sentry/cloudflare) package.
+The custom Worker entry point wraps `vinext/server/fetch-handler` with
+`Sentry.withSentry()`. The `CF_VERSION_METADATA` binding associates errors with
+Worker versions. `SENTRY_DSN` remains an optional Worker secret.
 
-The [custom worker entry point](#custom-worker-entry-point) wraps the OpenNext handler with `Sentry.withSentry()`, which instruments incoming requests for error and performance tracking.
+### Version skew
 
-The `version_metadata` binding (`CF_VERSION_METADATA`) in the Wrangler configuration enables Sentry [release configuration](https://docs.sentry.io/platforms/javascript/guides/cloudflare/#release-configuration-optional), allowing errors to be associated with specific worker versions.
+The previous OpenNext-specific skew-protection service binding and variables do
+not have a vinext equivalent and are not part of this deployment. Rollouts
+should therefore avoid serving old HTML alongside incompatible new client
+assets.
 
-For more details, refer to the [Sentry Cloudflare guide](https://docs.sentry.io/platforms/javascript/guides/cloudflare).
+## Commands
 
-## Scripts
+Run these commands from the repository root:
 
-Preview and deployment of the website targeting the Cloudflare network is implemented via the following two commands:
+- `pnpm build` builds the original Next.js application and caches `.next`.
+- `pnpm dev` and `pnpm start` run the original Next.js application.
+- `pnpm build:vinext` builds the monorepo and produces the vinext Worker in
+  `apps/site/dist`.
+- `pnpm dev:vinext` starts vinext development through Vite and workerd.
+- `pnpm start:vinext` starts the built vinext Worker with Wrangler.
+- `pnpm lint:types:vinext` generates vinext route types and type-checks the
+  shared application.
+- `pnpm cloudflare:preview` builds the Worker and starts a local Wrangler
+  preview.
+- `pnpm cloudflare:deploy` builds and deploys the Worker to Cloudflare.
 
-- `pnpm cloudflare:preview` builds the website using the OpenNext Cloudflare adapter and runs the website locally in a server simulating the Cloudflare hosting (using the [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/))
-- `pnpm cloudflare:deploy` builds the website using the OpenNext Cloudflare adapter and deploys the website to the Cloudflare network (using the [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/))
+The deployment workflow uses the same `cloudflare:build:worker` and
+`cloudflare:deploy` package scripts, so local and CI builds share the same
+output path and Wrangler configuration.

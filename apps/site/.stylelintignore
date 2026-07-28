@@ -15,7 +15,8 @@ lcov.info
 styles/old
 
 # Cloudflare Build Output
-.open-next
+dist
+.vinext
 .wrangler
 
 # Playwright

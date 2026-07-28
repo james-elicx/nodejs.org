@@ -4,11 +4,9 @@
 # REVIEWERS, please always double-check security practices before merging a PR that contains Workflow changes!!
 # AUTHORS, please only use actions with explicit SHA references, and avoid using `@master` or `@main` references or `@version` tags.
 
-# Note: this is a temporary workflow for deploying the OpenNext version of the site (hosted on https://node-test.org)
-#       this version of the site is just used for testing purposes and ideally we want to keep it in sync with the
-#       official website
+# This temporary workflow deploys the vinext version of the site to https://node-test.org.
 
-name: Deploy the Cloudflare OpenNext test version of the site (https://node-test.org)
+name: Deploy the Cloudflare vinext test site (https://node-test.org)
 
 on:
   workflow_dispatch:
@@ -25,7 +23,7 @@ permissions:
 
 jobs:
   deploy:
-    name: Deploy Open-Next site
+    name: Deploy vinext site
     runs-on: ubuntu-latest
 
     steps:
@@ -45,25 +43,18 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          # We want to ensure that the Node.js version running here respects our supported versions
           node-version-file: '.nvmrc'
           cache: 'pnpm'
 
       - name: Install packages
         run: pnpm install --frozen-lockfile
 
-      - name: Build blog data
-        working-directory: apps/site
-        run: node --run build:blog-data
+      - name: Build vinext site
+        run: pnpm build:vinext
 
-      - name: Build open-next site
-        working-directory: apps/site
-        run: node --run cloudflare:build:worker
-
-      - name: Deploy open-next site
+      - name: Deploy vinext site
         working-directory: apps/site
         run: node --run cloudflare:deploy
         env:
-          CF_WORKERS_SCRIPTS_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: 07be8d2fbc940503ca1be344714cb0d1

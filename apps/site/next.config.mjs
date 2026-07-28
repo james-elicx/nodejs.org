@@ -1,22 +1,10 @@
 'use strict';
+
 import createNextIntlPlugin from 'next-intl/plugin';
 
-import { OPEN_NEXT_CLOUDFLARE } from './next.constants.cloudflare.mjs';
 import { BASE_PATH, ENABLE_STATIC_EXPORT } from './next.constants.mjs';
 import { getImagesConfig } from './next.image.config.mjs';
 import { redirects, rewrites } from './next.rewrites.mjs';
-
-const getDeploymentId = async () => {
-  if (OPEN_NEXT_CLOUDFLARE) {
-    // If we're building for the Cloudflare deployment we want to set
-    // an appropriate deploymentId (needed for skew protection)
-    const openNextAdapter = await import('@opennextjs/cloudflare');
-
-    return openNextAdapter.getDeploymentId();
-  }
-
-  return undefined;
-};
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -81,7 +69,6 @@ const nextConfig = {
     // Faster Development Servers with Turbopack
     turbopackFileSystemCacheForDev: true,
   },
-  deploymentId: await getDeploymentId(),
 };
 
 const withNextIntl = createNextIntlPlugin('./i18n.tsx');
