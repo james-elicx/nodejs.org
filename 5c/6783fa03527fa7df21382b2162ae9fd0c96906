@@ -1,0 +1,25 @@
+apps/site/app/[locale]/[...path]/page.tsx
+  s_16583bdcc5266f::t_c6c76f9e41c1eb 34,50-52
+apps/site/app/[locale]/blog/[...path]/page.tsx
+  s_16583bdcc5266f::t_30231a68329057 5,26-27,35
+apps/site/app/[locale]/download/archive/[version]/page.tsx
+  s_16583bdcc5266f::t_9205559ea6e6f3 7,26-27,37
+apps/site/app/[locale]/page.tsx
+  s_16583bdcc5266f::t_45440bf63def09 25,37-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5c6783fa03527fa7df21382b2162ae9fd0c96906",
+  "prompts": {},
+  "sessions": {
+    "s_16583bdcc5266f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa8f6-d8c6-7142-8b5f-473b432d479b",
+        "model": "unknown"
+      },
+      "human_author": "James <james@eli.cx>"
+    }
+  }
+}
