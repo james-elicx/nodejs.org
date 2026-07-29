@@ -1,0 +1,30 @@
+patches/vinext@1.0.0-beta.4.patch
+  s_16583bdcc5266f::t_a147bde24b7e6b 33,47,62,68-69,76,84-136
+  s_7824ae84ef404f::t_e8f22051f49b35 1-32,34-46,48-61,63-67,70-75,77-83,137
+pnpm-lock.yaml
+  s_16583bdcc5266f::t_cdd6c11a54b9bd 232,358,439,12293,12295,17701
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "5eace3f956c10da92880be7ce16e942bbcb47ff7",
+  "prompts": {},
+  "sessions": {
+    "s_16583bdcc5266f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa8f6-d8c6-7142-8b5f-473b432d479b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "James <james@eli.cx>"
+    },
+    "s_7824ae84ef404f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019faad9-5801-7da3-b1f8-682636f0eb36",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "James <james@eli.cx>"
+    }
+  }
+}
