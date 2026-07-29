@@ -12,7 +12,7 @@
     "build:vinext": "cross-env NODE_NO_WARNINGS=1 vinext build",
     "postbuild:vinext": "node --run build:fs-assets",
     "cloudflare:build:worker": "pnpm run build:vinext",
-    "cloudflare:deploy": "cross-env VINEXT_BUILD_TIME_ISR=true vinext-cloudflare deploy --skip-build --config dist/server/wrangler.json --experimental-warm-cdn-cache --warm-cdn-strict",
+    "cloudflare:deploy": "cross-env VINEXT_BUILD_TIME_ISR=true NEXT_PUBLIC_STATIC_EXPORT_LOCALE=true vinext-cloudflare deploy --skip-build --config dist/server/wrangler.json --experimental-warm-cdn-cache --warm-cdn-strict",
     "cloudflare:preview": "wrangler dev --config dist/server/wrangler.json",
     "deploy": "cross-env NEXT_PUBLIC_STATIC_EXPORT=true node --run build",
     "predev": "node --run build:blog-data",
