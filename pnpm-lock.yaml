@@ -447,9 +447,6 @@ importers:
       '@eslint-react/eslint-plugin':
         specifier: ~5.8.6
         version: 5.8.6(eslint@10.2.1(jiti@2.7.0))(typescript@5.9.3)
-      '@flarelabs-net/wrangler-build-time-fs-assets-polyfilling':
-        specifier: ^0.0.1
-        version: 0.0.1
       '@mdx-js/rollup':
         specifier: ^3.1.1
         version: 3.1.1(rollup@4.62.3)
@@ -1728,10 +1725,6 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
-
-  '@flarelabs-net/wrangler-build-time-fs-assets-polyfilling@0.0.1':
-    resolution: {integrity: sha512-uT7N77TaKZqGeb3c/KR+UlUs7xR36iU/g3uPaDflpJsXGRk8XwL2Ol2IpCNmv7ok57teModokqcbb6JT8a018Q==}
-    hasBin: true
 
   '@floating-ui/core@1.7.3':
     resolution: {integrity: sha512-sGnvb5dmrJaKEZ+LDIpguvdX3bDlEllmv4/ClQ9awcmCZrlx5jQyyMWFM5kBI+EyNOCDDiKk8il0zeuX3Zlg/w==}
@@ -9782,8 +9775,6 @@ snapshots:
   '@exodus/bytes@1.15.0(@noble/hashes@1.8.0)':
     optionalDependencies:
       '@noble/hashes': 1.8.0
-
-  '@flarelabs-net/wrangler-build-time-fs-assets-polyfilling@0.0.1': {}
 
   '@floating-ui/core@1.7.3':
     dependencies:

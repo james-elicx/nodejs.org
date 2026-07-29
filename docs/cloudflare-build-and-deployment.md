@@ -42,13 +42,14 @@ during the initial vinext build.
 ### Filesystem-backed content
 
 The site reads Markdown pages and code snippets through Node.js filesystem APIs.
-Workers do not have a normal filesystem, so
-`@flarelabs-net/wrangler-build-time-fs-assets-polyfilling` inventories those
-directories during the build, copies them into `dist/client`, and generates the
-asset-backed filesystem implementation used by server rendering.
+Workers do not expose static assets through their filesystem, so a
+Cloudflare-only Vite adapter inventories those directories during the build and
+reads their contents directly through the `ASSETS` binding. A small preparation
+script copies the source files into `dist/client/_fs_`; the original Node.js
+filesystem implementation remains unchanged for Next.js.
 
-The filesystem asset generation must run both before the vinext build (so the
-implementation can be bundled) and after it (because Vite recreates the output
+The asset copy must run both before the vinext build (so build-time rendering
+can read the content) and after it (because Vite recreates the output
 directory).
 
 ### Images

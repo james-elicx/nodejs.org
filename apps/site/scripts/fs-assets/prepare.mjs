@@ -1,10 +1,22 @@
-import { cp, rm } from 'node:fs/promises';
+import { cp, mkdir, rm } from 'node:fs/promises';
+import { join } from 'node:path';
 
-const source = '.wrangler/fs-assets-polyfilling';
-const destination = '.vinext-fs-assets';
+const outputDirectory = 'dist/client';
+const fsAssetsOutputDirectory = join(outputDirectory, '_fs_');
+const assetDirectories = ['pages', 'snippets'];
 
-// The Cloudflare Vite development runtime uses `.wrangler` for its own state
-// and clears this generated module tree before Vite loads the application.
-// Preserve the generator output at a stable path used by both dev and build.
-await rm(destination, { force: true, recursive: true });
-await cp(source, destination, { recursive: true });
+await Promise.all(
+  assetDirectories.map(directory =>
+    rm(join(outputDirectory, directory), { force: true, recursive: true })
+  )
+);
+await rm(fsAssetsOutputDirectory, { force: true, recursive: true });
+await mkdir(fsAssetsOutputDirectory, { recursive: true });
+
+await Promise.all(
+  assetDirectories.map(async source => {
+    const destination = join(fsAssetsOutputDirectory, source);
+
+    await cp(source, destination, { recursive: true });
+  })
+);

@@ -80,7 +80,7 @@
         "^build"
       ],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,mdx,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
+        "{app,cloudflare,components,hooks,i18n,layouts,mdx,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
@@ -217,7 +217,7 @@
     },
     "build:fs-assets": {
       "inputs": ["{pages,snippets,scripts/fs-assets}/**/*"],
-      "outputs": [".vinext-fs-assets/**"]
+      "outputs": ["dist/client/_fs_/**"]
     },
     "build:twoslash-fsmap": {
       "inputs": ["scripts/twoslash-fsmap/**", "../../pnpm-lock.yaml"],
@@ -231,7 +231,7 @@
         "^build"
       ],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
+        "{app,cloudflare,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
@@ -244,7 +244,7 @@
     "cloudflare:preview": {
       "dependsOn": ["cloudflare:build:worker"],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
+        "{app,cloudflare,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",
@@ -257,7 +257,7 @@
     "cloudflare:deploy": {
       "dependsOn": ["cloudflare:build:worker"],
       "inputs": [
-        "{app,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
+        "{app,cloudflare,components,hooks,i18n,layouts,mdx,middlewares,pages,providers,types,util}/**/*.{ts,tsx,mjs}",
         "{app,components,layouts,pages,styles}/**/*.css",
         "{next-data,scripts,i18n}/**/*.{mjs,json}",
         "{app,pages}/**/*.{mdx,md}",

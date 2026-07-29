@@ -1,5 +1,5 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { readFile, readdir } from 'node:fs/promises';
+import { join, relative, resolve, sep } from 'node:path';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
 import { cdnAdapter } from '@vinext/cloudflare/cache/cdn-adapter';
@@ -7,22 +7,72 @@ import { imagesOptimizer } from '@vinext/cloudflare/images/images-optimizer';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 
-import type { ViteDevServer } from 'vite';
+import type { Plugin, ViteDevServer } from 'vite';
 
+const fsAssetsManifest = 'virtual:nodejs-org-cloudflare-fs-assets';
+const resolvedFsAssetsManifest = `\0${fsAssetsManifest}`;
 const fsPromisesPolyfill = resolve(
   import.meta.dirname,
-  '.vinext-fs-assets/polyfills/node/fs/promises.ts'
+  'cloudflare/fs-promises.mjs'
 );
 const createVfsTwoslasher = resolve(
   import.meta.dirname,
   'mdx/create-vfs-twoslasher.mjs'
 );
+const downloadSnippets = resolve(
+  import.meta.dirname,
+  'next-data/generators/downloadSnippets.mjs'
+);
+const dynamicRouter = resolve(import.meta.dirname, 'next.dynamic.mjs');
 const nextHelpers = resolve(import.meta.dirname, 'next.helpers.mjs');
 const fsAssetsRoot = resolve(import.meta.dirname, 'dist/client');
+const fsAssetSources = ['pages', 'snippets'];
 
-const cloudflareFsAssets = () => ({
+const getFsAssetFiles = async () => {
+  const files: Array<string> = [];
+
+  const visit = async (directory: string) => {
+    const entries = await readdir(directory, { withFileTypes: true });
+
+    await Promise.all(
+      entries.map(async entry => {
+        const path = join(directory, entry.name);
+
+        if (entry.isDirectory()) {
+          await visit(path);
+        } else if (entry.isFile()) {
+          files.push(
+            relative(import.meta.dirname, path)
+              .split(sep)
+              .join('/')
+          );
+        }
+      })
+    );
+  };
+
+  await Promise.all(
+    fsAssetSources.map(source => visit(resolve(import.meta.dirname, source)))
+  );
+
+  return files.sort();
+};
+
+const fsAssetFiles = getFsAssetFiles();
+
+const cloudflareFsAssets = (): Plugin => ({
   name: 'nodejs-org:cloudflare-fs-assets',
   enforce: 'pre' as const,
+  resolveId(id) {
+    if (id === fsAssetsManifest) {
+      return resolvedFsAssetsManifest;
+    }
+  },
+  async load(id) {
+    if (id === resolvedFsAssetsManifest) {
+      return `export default ${JSON.stringify(await fsAssetFiles)};`;
+    }
+  },
   configureServer(server: ViteDevServer) {
     // Cloudflare's development ASSETS binding forwards these requests through
     // Vite, so serve them before Vite treats Markdown as a source module.
@@ -35,8 +85,8 @@ const cloudflareFsAssets = () => ({
         new URL(request.url, 'http://localhost').pathname
       );
       if (
-        !pathname.startsWith('/pages/') &&
-        !pathname.startsWith('/snippets/')
+        !pathname.startsWith('/_fs_/pages/') &&
+        !pathname.startsWith('/_fs_/snippets/')
       ) {
         return next();
       }
@@ -65,18 +115,16 @@ const cloudflareFsAssets = () => ({
     });
   },
   transform(code: string, id: string) {
-    if (id === resolve(import.meta.dirname, 'next.dynamic.mjs')) {
-      return code
-        .replace('node:fs/promises', fsPromisesPolyfill)
-        .replace(
-          "join(process.cwd(), 'pages')",
-          // The generated Worker filesystem indexes these assets from its
-          // root rather than from the build machine's absolute working path.
-          "'pages'"
-        );
+    if (id === dynamicRouter) {
+      return code.replace('node:fs/promises', fsPromisesPolyfill).replace(
+        "join(process.cwd(), 'pages')",
+        // The generated Worker filesystem indexes these assets from its
+        // root rather than from the build machine's absolute working path.
+        "'pages'"
+      );
     }
 
-    if (id === nextHelpers) {
+    if (id === nextHelpers || id === downloadSnippets) {
       return code.replace('node:fs/promises', fsPromisesPolyfill);
     }
 
