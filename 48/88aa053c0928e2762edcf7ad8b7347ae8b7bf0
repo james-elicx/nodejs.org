@@ -1,0 +1,19 @@
+apps/site/package.json
+  s_16583bdcc5266f::t_9f1afa3fee70de 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "4888aa053c0928e2762edcf7ad8b7347ae8b7bf0",
+  "prompts": {},
+  "sessions": {
+    "s_16583bdcc5266f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa8f6-d8c6-7142-8b5f-473b432d479b",
+        "model": "unknown"
+      },
+      "human_author": "James <james@eli.cx>"
+    }
+  }
+}
