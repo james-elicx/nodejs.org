@@ -2,6 +2,7 @@ import { availableLocaleCodes, defaultLocale } from '@node-core/website-i18n';
 import { notFound } from 'next/navigation';
 
 import { ENABLE_STATIC_EXPORT } from '#site/next.constants.mjs';
+import { ENABLE_STATIC_EXPORT_LOCALE } from '#site/next.constants.mjs';
 import { ENABLE_VINEXT_BUILD_TIME_ISR } from '#site/next.constants.mjs';
 import { BLOG_DYNAMIC_ROUTES } from '#site/next.dynamic.constants.mjs';
 import * as basePage from '#site/next.dynamic.page.mjs';
@@ -22,8 +23,8 @@ export const generateMetadata = ({ params }: PageParams) =>
 
 // Generates all possible static paths based on the locales and environment configuration
 // - Returns an empty array unless static export or vinext build-time ISR is enabled
-// - For vinext build-time ISR, generates paths for all available locales
-// - Otherwise, preserves the static export's default-locale-only behaviour
+// - If the locale switch is enabled, generates paths for all available locales
+// - Otherwise, generates paths only for the default locale
 // @see https://nextjs.org/docs/app/api-reference/functions/generate-static-params
 export const generateStaticParams = async () => {
   // Return an empty array unless build-time route generation is enabled
@@ -31,7 +32,7 @@ export const generateStaticParams = async () => {
     return [];
   }
 
-  const locales = ENABLE_VINEXT_BUILD_TIME_ISR
+  const locales = ENABLE_STATIC_EXPORT_LOCALE
     ? availableLocaleCodes
     : [defaultLocale.code];
 

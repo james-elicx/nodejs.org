@@ -31,8 +31,7 @@ export const generateMetadata = basePage.generateMetadata;
 
 // Generates all possible static paths based on the locales and environment configuration
 // - Returns an empty array unless static export or vinext build-time ISR is enabled
-// - If `ENABLE_STATIC_EXPORT_LOCALE` or `ENABLE_VINEXT_BUILD_TIME_ISR` is true,
-//   generates paths for all available locales
+// - If `ENABLE_STATIC_EXPORT_LOCALE` is true, generates paths for all locales
 // - Otherwise, generates paths only for the default locale
 // @see https://nextjs.org/docs/app/api-reference/functions/generate-static-params
 export const generateStaticParams = async () => {
@@ -48,10 +47,9 @@ export const generateStaticParams = async () => {
     routes.map(pathname => dynamicRouter.mapPathToRoute(l, pathname));
 
   // Determine which locales to include in the static export
-  const locales =
-    ENABLE_STATIC_EXPORT_LOCALE || ENABLE_VINEXT_BUILD_TIME_ISR
-      ? availableLocaleCodes
-      : [defaultLocale.code];
+  const locales = ENABLE_STATIC_EXPORT_LOCALE
+    ? availableLocaleCodes
+    : [defaultLocale.code];
 
   // Generates all possible routes for all available locales
   const routesWithLocales = await Promise.all(locales.map(getRoutesForLocale));
