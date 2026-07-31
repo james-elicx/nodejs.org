@@ -3,8 +3,8 @@ packages:
   - apps/*
 
 allowBuilds:
-  "@parcel/watcher": true
-  "@swc/core": true
+  '@parcel/watcher': true
+  '@swc/core': true
   esbuild: true
   sharp: true
   unrs-resolver: true
@@ -18,7 +18,3 @@ catalog:
   react: ^19.2.6
   tailwindcss: ~4.1.17
   typescript: 5.9.3
-
-patchedDependencies:
-  '@vinext/cloudflare@1.0.0-beta.4': patches/@vinext+cloudflare@1.0.0-beta.4.patch
-  vinext@1.0.0-beta.4: patches/vinext@1.0.0-beta.4.patch
