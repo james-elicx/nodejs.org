@@ -61,7 +61,7 @@
     "@vercel/analytics": "~2.0.1",
     "@vercel/otel": "~2.1.2",
     "@vercel/speed-insights": "~2.0.0",
-    "@vinext/cloudflare": "https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@fd35d9d148dacbbbc9c0f8a2481351fec004d7bb",
+    "@vinext/cloudflare": "https://pkg.pr.new/@vinext/cloudflare@3002",
     "classnames": "catalog:",
     "cross-env": "catalog:",
     "feed": "~5.2.0",
@@ -88,7 +88,7 @@
     "unist-util-visit": "^5.1.0",
     "vfile": "~6.0.3",
     "vfile-matter": "~5.0.1",
-    "vinext": "https://pkg.pr.new/vinext@fd35d9d148dacbbbc9c0f8a2481351fec004d7bb"
+    "vinext": "https://pkg.pr.new/vinext@3002"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.47.0",
@@ -104,9 +104,9 @@
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.13",
     "@types/semver": "~7.7.1",
-    "@vinext/types": "https://pkg.pr.new/cloudflare/vinext/@vinext/types@fd35d9d148dacbbbc9c0f8a2481351fec004d7bb",
+    "@vinext/types": "https://pkg.pr.new/@vinext/types@3002",
     "@vitejs/plugin-react": "^6.0.4",
-    "@vitejs/plugin-rsc": "^0.5.30",
+    "@vitejs/plugin-rsc": "^0.5.34",
     "babel-plugin-react-compiler": "^1.0.0",
     "dedent": "^1.7.2",
     "eslint-plugin-mdx": "~3.7.0",
