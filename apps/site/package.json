@@ -61,7 +61,7 @@
     "@vercel/analytics": "~2.0.1",
     "@vercel/otel": "~2.1.2",
     "@vercel/speed-insights": "~2.0.0",
-    "@vinext/cloudflare": "https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@c0fb2098541b238f01679448863fc93b84270881",
+    "@vinext/cloudflare": "https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@2a86cecf086c0d1648cef24066419a6624406f04",
     "classnames": "catalog:",
     "cross-env": "catalog:",
     "feed": "~5.2.0",
@@ -88,7 +88,7 @@
     "unist-util-visit": "^5.1.0",
     "vfile": "~6.0.3",
     "vfile-matter": "~5.0.1",
-    "vinext": "https://pkg.pr.new/vinext@c0fb2098541b238f01679448863fc93b84270881"
+    "vinext": "https://pkg.pr.new/vinext@2a86cecf086c0d1648cef24066419a6624406f04"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.47.0",
@@ -104,7 +104,7 @@
     "@types/mdast": "^4.0.4",
     "@types/mdx": "^2.0.13",
     "@types/semver": "~7.7.1",
-    "@vinext/types": "https://pkg.pr.new/cloudflare/vinext/@vinext/types@c0fb2098541b238f01679448863fc93b84270881",
+    "@vinext/types": "https://pkg.pr.new/cloudflare/vinext/@vinext/types@2a86cecf086c0d1648cef24066419a6624406f04",
     "@vitejs/plugin-react": "^6.0.4",
     "@vitejs/plugin-rsc": "^0.5.34",
     "babel-plugin-react-compiler": "^1.0.0",
