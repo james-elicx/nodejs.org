@@ -1,0 +1,21 @@
+apps/site/package.json
+  s_16583bdcc5266f::t_00a850badadb36 64,91,107
+pnpm-lock.yaml
+  s_16583bdcc5266f::t_63fe05c5d580c9 353-354,434-435,477-478,4574-4575,4582-4583,4587-4588,8674-8675,12281,12283,12285,12287,17689,17693
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.10",
+  "base_commit_sha": "dd29e1bf7e8e308069a9e9c31beda93352dbfd02",
+  "prompts": {},
+  "sessions": {
+    "s_16583bdcc5266f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fa8f6-d8c6-7142-8b5f-473b432d479b",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "James <james@eli.cx>"
+    }
+  }
+}
