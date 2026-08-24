@@ -1,25 +1,35 @@
 diff --git a/dist/cdn-warm.js b/dist/cdn-warm.js
-index c5a43869b463ee91ae8b5115be9f4559fa1fe819..c27ebebd70a8d465e1a9e981fd43eaa85186191c 100644
+index c5a43869b463ee91ae8b5115be9f4559fa1fe819..9acbcd02813ef7fd69d6966c7da1c6225d730646 100644
 --- a/dist/cdn-warm.js
 +++ b/dist/cdn-warm.js
-@@ -110,0 +111 @@ const WORKER_VERSION_OVERRIDE_HEADER = "Cloudflare-Workers-Version-Overrides";
+@@ -110,0 +111,4 @@ const WORKER_VERSION_OVERRIDE_HEADER = "Cloudflare-Workers-Version-Overrides";
 +const WORKER_VERSION_ID_HEADER = "X-Cloudflare-Worker-Version-Id";
-@@ -414,0 +416,2 @@ async function warmOnePath(target, options) {
++const CDN_WARM_TRACE_ID_ENV = "VINEXT_CDN_WARM_CF_TRACE_ID";
++const CDN_WARM_TRACE_REQUEST_LIMIT = 25;
++const CF_TRACE_ID_HEADER = "cf-trace-id";
+@@ -414,0 +419,2 @@ async function warmOnePath(target, options) {
 +	let lastCacheStatus = null;
 +	let lastWorkerVersionId = null;
-@@ -428,0 +431,2 @@ async function warmOnePath(target, options) {
+@@ -428,0 +434,2 @@ async function warmOnePath(target, options) {
 +			lastCacheStatus = response.headers.get("CF-Cache-Status");
 +			lastWorkerVersionId = response.headers.get(WORKER_VERSION_ID_HEADER);
-@@ -476 +482,3 @@ async function warmOnePath(target, options) {
+@@ -476 +485,3 @@ async function warmOnePath(target, options) {
 -		retryable: lastRetryable
 +		retryable: lastRetryable,
 +		cacheStatus: lastCacheStatus,
 +		workerVersionId: lastWorkerVersionId
-@@ -536 +543,2 @@ async function warmCdnCache(options) {
+@@ -535,0 +545,6 @@ async function warmCdnCache(options) {
++	const traceId = process.env[CDN_WARM_TRACE_ID_ENV];
++	if (traceId) {
++		const tracedRequests = requests.slice(0, CDN_WARM_TRACE_REQUEST_LIMIT);
++		for (const request of tracedRequests) request.headers.set(CF_TRACE_ID_HEADER, traceId);
++		console.log(`  CDN warmup: attaching ${CF_TRACE_ID_HEADER} to first ${tracedRequests.length} request(s).`);
++	}
+@@ -536 +552,2 @@ async function warmCdnCache(options) {
 -	const hasVersionOverride = new Headers(options.headers).has(WORKER_VERSION_OVERRIDE_HEADER);
 +	const versionOverride = new Headers(options.headers).get(WORKER_VERSION_OVERRIDE_HEADER);
 +	const hasVersionOverride = versionOverride !== null;
-@@ -622,2 +630 @@ async function warmCdnCache(options) {
+@@ -622,2 +639 @@ async function warmCdnCache(options) {
 -		for (const failure of failures.slice(0, 5)) console.warn(`  CDN warmup failed for ${failure.path}: ${failure.error}`);
 -		if (failures.length > 5) console.warn(`  CDN warmup: ${failures.length - 5} additional failure(s) omitted.`);
 +		for (const { result: failure } of failedRequests) console.warn(`  CDN warmup failed for ${failure.path}: ${failure.error}; version override=${versionOverride ?? "none"}; worker version=${failure.workerVersionId ?? "missing"}; CF-Cache-Status=${failure.cacheStatus ?? "missing"}`);
