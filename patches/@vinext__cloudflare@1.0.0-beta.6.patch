@@ -1,0 +1,15 @@
+diff --git a/dist/cdn-warm.js b/dist/cdn-warm.js
+index c5a43869b463ee91ae8b5115be9f4559fa1fe819..3ef689d5baaed6577248a9b45623aa53f24867e5 100644
+--- a/dist/cdn-warm.js
++++ b/dist/cdn-warm.js
+@@ -13,0 +14,3 @@ const DEFAULT_CDN_WARM_TIMEOUT_MS = 1e4;
++const CDN_WARM_TRACE_ID_ENV = "VINEXT_CDN_WARM_CF_TRACE_ID";
++const CDN_WARM_TRACE_REQUEST_LIMIT = 25;
++const CF_TRACE_ID_HEADER = "cf-trace-id";
+@@ -534,0 +538,6 @@ async function warmCdnCache(options) {
++	const traceId = process.env[CDN_WARM_TRACE_ID_ENV];
++	if (traceId) {
++		const tracedRequests = requests.slice(0, CDN_WARM_TRACE_REQUEST_LIMIT);
++		for (const request of tracedRequests) request.headers.set(CF_TRACE_ID_HEADER, traceId);
++		console.log(`  CDN warmup: attaching ${CF_TRACE_ID_HEADER} to first ${tracedRequests.length} request(s).`);
++	}
