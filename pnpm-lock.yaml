@@ -228,7 +228,7 @@ catalogs:
       version: 5.9.3
 
 patchedDependencies:
-  '@vinext/cloudflare@1.0.0-beta.6': 3a9a7b238bbc7f2d0368f7efde06aa0cfdfadef707ecd871c894518d87dbd79e
+  '@vinext/cloudflare@1.0.0-beta.6': 85d5837401c6665793aba96b53ebc0a0b342ce2d06f01e5389f2db81a6f64035
 
 importers:
 
@@ -353,8 +353,8 @@ importers:
         specifier: ~2.0.0
         version: 2.0.0(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
       '@vinext/cloudflare':
-        specifier: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@ca1921c108552bba3f61ffe2a83be4ee1125af46
-        version: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@ca1921c108552bba3f61ffe2a83be4ee1125af46(patch_hash=3a9a7b238bbc7f2d0368f7efde06aa0cfdfadef707ecd871c894518d87dbd79e)(vinext@https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))
+        specifier: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@827daa984521b4368821acefe4b199c32aa8a7cd
+        version: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@827daa984521b4368821acefe4b199c32aa8a7cd(patch_hash=85d5837401c6665793aba96b53ebc0a0b342ce2d06f01e5389f2db81a6f64035)(vinext@https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))
       classnames:
         specifier: 'catalog:'
         version: 2.5.1
@@ -434,8 +434,8 @@ importers:
         specifier: ~5.0.1
         version: 5.0.1
       vinext:
-        specifier: https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46
-        version: https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
+        specifier: https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd
+        version: https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.47.0
@@ -477,8 +477,8 @@ importers:
         specifier: ~7.7.1
         version: 7.7.1
       '@vinext/types':
-        specifier: https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c108552bba3f61ffe2a83be4ee1125af46
-        version: https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c108552bba3f61ffe2a83be4ee1125af46
+        specifier: https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa984521b4368821acefe4b199c32aa8a7cd
+        version: https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa984521b4368821acefe4b199c32aa8a7cd
       '@vitejs/plugin-react':
         specifier: ^6.0.4
         version: 6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
@@ -4574,21 +4574,21 @@ packages:
       vue-router:
         optional: true
 
-  '@vinext/cloudflare@https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@ca1921c108552bba3f61ffe2a83be4ee1125af46':
-    resolution: {integrity: sha512-NuhzQVvRWU7Blyxb4vzKMWF96f3aBxXBKUPic80nf5RjVNxs7TsFkvDG/0PIpw/pEFC7RrKDRdyZSLQZ0aBeDw==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@ca1921c108552bba3f61ffe2a83be4ee1125af46}
+  '@vinext/cloudflare@https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@827daa984521b4368821acefe4b199c32aa8a7cd':
+    resolution: {integrity: sha512-Kv4Sf+Blg50cdM2SPJAGpjEt2Prc3MU0G9HdT1NTaRxsL0cNUulXA/XsIv1sNSZLD9Ln35PDk1OMVyUpdojLMQ==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@827daa984521b4368821acefe4b199c32aa8a7cd}
     version: 1.0.0-beta.6
     engines: {node: '>=22'}
     hasBin: true
     peerDependencies:
       vinext: ^1.0.0-beta.7
 
-  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c':
-    resolution: {integrity: sha512-2SfhoXs95MsCRIj3aJMgXXkBy7Bja+vzNS/hllw4y2DHDS1FS8wuK8eqRzZGSXnCqyDiDRAYOBbbaf8J5cgsAQ==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c}
+  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa9':
+    resolution: {integrity: sha512-2SfhoXs95MsCRIj3aJMgXXkBy7Bja+vzNS/hllw4y2DHDS1FS8wuK8eqRzZGSXnCqyDiDRAYOBbbaf8J5cgsAQ==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa9}
     version: 1.0.0-beta.2
     engines: {node: '>=22'}
 
-  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c108552bba3f61ffe2a83be4ee1125af46':
-    resolution: {integrity: sha512-2SfhoXs95MsCRIj3aJMgXXkBy7Bja+vzNS/hllw4y2DHDS1FS8wuK8eqRzZGSXnCqyDiDRAYOBbbaf8J5cgsAQ==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c108552bba3f61ffe2a83be4ee1125af46}
+  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa984521b4368821acefe4b199c32aa8a7cd':
+    resolution: {integrity: sha512-2SfhoXs95MsCRIj3aJMgXXkBy7Bja+vzNS/hllw4y2DHDS1FS8wuK8eqRzZGSXnCqyDiDRAYOBbbaf8J5cgsAQ==, tarball: https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa984521b4368821acefe4b199c32aa8a7cd}
     version: 1.0.0-beta.2
     engines: {node: '>=22'}
 
@@ -8674,8 +8674,8 @@ packages:
   vfile@6.0.3:
     resolution: {integrity: sha512-KzIbH/9tXat2u30jf+smMwFCsno4wHVdNmzFyL+T/L3UGqqk6JKfVqOFOZEpZSHADH1k40ab6NUIXZq422ov3Q==}
 
-  vinext@https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46:
-    resolution: {integrity: sha512-CSCWodS9tAYyvSmFM3quPDJR5yFXZrC8ZPl94WC5/4qwAI++7L+sc59nTGIetJUNDMaAxkM0Hicurl0vd37OCA==, tarball: https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46}
+  vinext@https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd:
+    resolution: {integrity: sha512-vrkq9yxwU7/s2KvzZTqGfy9oIIlrt3R+mvJGoKd4qgUJKL+N+HCmIkkFkikj4PuobZmjQSc4YCWGPefcj9jZVg==, tarball: https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd}
     version: 1.0.0-beta.7
     engines: {node: '>=22'}
     hasBin: true
@@ -12281,13 +12281,13 @@ snapshots:
       next: 16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react: 19.2.6
 
-  ? '@vinext/cloudflare@https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@ca1921c108552bba3f61ffe2a83be4ee1125af46(patch_hash=3a9a7b238bbc7f2d0368f7efde06aa0cfdfadef707ecd871c894518d87dbd79e)(vinext@https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))'
+  ? '@vinext/cloudflare@https://pkg.pr.new/cloudflare/vinext/@vinext/cloudflare@827daa984521b4368821acefe4b199c32aa8a7cd(patch_hash=85d5837401c6665793aba96b53ebc0a0b342ce2d06f01e5389f2db81a6f64035)(vinext@https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))'
   : dependencies:
-      vinext: https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
+      vinext: https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
 
-  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c': {}
+  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa9': {}
 
-  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c108552bba3f61ffe2a83be4ee1125af46': {}
+  '@vinext/types@https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa984521b4368821acefe4b199c32aa8a7cd': {}
 
   '@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))':
     dependencies:
@@ -17689,11 +17689,11 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vinext@https://pkg.pr.new/vinext@ca1921c108552bba3f61ffe2a83be4ee1125af46(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)):
+  vinext@https://pkg.pr.new/vinext@827daa984521b4368821acefe4b199c32aa8a7cd(@mdx-js/rollup@3.1.1(rollup@4.62.3))(@vitejs/plugin-react@6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(@vitejs/plugin-rsc@0.5.34(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)))(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react-server-dom-webpack@19.2.6(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(webpack@5.107.2(esbuild@0.28.1)(postcss@8.5.23)))(react@19.2.6)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0)):
     dependencies:
       '@unpic/react': 1.0.2(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.59.1)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@vercel/og': 0.8.6
-      '@vinext/types': https://pkg.pr.new/cloudflare/vinext/@vinext/types@ca1921c
+      '@vinext/types': https://pkg.pr.new/cloudflare/vinext/@vinext/types@827daa9
       '@vitejs/plugin-react': 6.0.4(babel-plugin-react-compiler@1.0.0)(vite@8.1.5(@types/node@24.10.1)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.48.0)(tsx@4.22.3)(yaml@2.9.0))
       ipaddr.js: 2.4.0
       magic-string: 0.30.21

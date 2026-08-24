@@ -26,7 +26,7 @@
     },
   },
   "version_metadata": {
-    // CF_VERSION_METADATA used for sentry
+    // Used for Sentry and X-Cloudflare-Worker-Version-Id diagnostics.
     // See: https://docs.sentry.io/platforms/javascript/guides/cloudflare/#release-configuration-optional
     "binding": "CF_VERSION_METADATA",
   },

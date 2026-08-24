@@ -7,16 +7,22 @@ import type {
   ExecutionContext,
   Iso3166Alpha2Code,
   Request,
+  WorkerVersionMetadata,
 } from '@cloudflare/workers-types';
 
+const workerVersionHeader = 'X-Cloudflare-Worker-Version-Id';
+
+type WorkerEnv = {
+  CF_VERSION_METADATA?: WorkerVersionMetadata;
+  /**
+   * Sentry DSN, used for error monitoring.
+   * If missing, Sentry isn't used.
+   */
+  SENTRY_DSN?: string;
+};
+
 export default withSentry(
-  (env: {
-    /**
-     * Sentry DSN, used for error monitoring
-     * If missing, Sentry isn't used
-     */
-    SENTRY_DSN?: string;
-  }) => ({
+  (env: WorkerEnv) => ({
     dsn: env.SENTRY_DSN,
     // Enable logs to be sent to Sentry
     enableLogs: true,
@@ -26,11 +32,7 @@ export default withSentry(
     tracesSampleRate: 0.05,
   }),
   {
-    async fetch(
-      request: Request,
-      env: Record<string, unknown>,
-      ctx: ExecutionContext
-    ) {
+    async fetch(request: Request, env: WorkerEnv, ctx: ExecutionContext) {
       setTags({
         request_id: crypto.randomUUID(),
         user_agent: request.headers.get('user-agent'),
@@ -41,7 +43,21 @@ export default withSentry(
         colo: request.cf?.colo as string | undefined,
       });
 
-      return handler.fetch(request, env, ctx);
+      const response = await handler.fetch(request, env, ctx);
+      const workerVersionId = env.CF_VERSION_METADATA?.id;
+
+      if (!workerVersionId) {
+        return response;
+      }
+
+      const headers = new Headers(response.headers);
+      headers.set(workerVersionHeader, workerVersionId);
+
+      return new Response(response.body, {
+        headers,
+        status: response.status,
+        statusText: response.statusText,
+      });
     },
   }
 );
