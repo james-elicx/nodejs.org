@@ -32,4 +32,8 @@
   },
   "cache": { "enabled": true },
   "images": { "binding": "IMAGES" },
+  "vars": {
+    "VINEXT_BUILD_TIME_ISR": true,
+    "NEXT_PUBLIC_STATIC_EXPORT_LOCALE": false,
+  },
 }
