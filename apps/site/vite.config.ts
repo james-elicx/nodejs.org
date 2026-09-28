@@ -1,13 +1,17 @@
+
+
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, resolve, sep } from 'node:path';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
-import { cdnAdapter } from '@vinext/cloudflare/cache/cdn-adapter';
+import { responseStoreAdapter } from '@vinext/cloudflare/cache/response-store-adapter';
 import { imagesOptimizer } from '@vinext/cloudflare/images/images-optimizer';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
 
 import type { Plugin, ViteDevServer } from 'vite';
+
+import { responseStoreServiceBinding } from "./cloudflare.config";
 
 const fsAssetsManifest = 'virtual:nodejs-org-cloudflare-fs-assets';
 const resolvedFsAssetsManifest = `\0${fsAssetsManifest}`;
@@ -25,7 +29,7 @@ const downloadSnippets = resolve(
 );
 const dynamicRouter = resolve(import.meta.dirname, 'next.dynamic.mjs');
 const nextHelpers = resolve(import.meta.dirname, 'next.helpers.mjs');
-const fsAssetsRoot = resolve(import.meta.dirname, 'dist/client');
+const fsAssetsRoot = resolve(import.meta.dirname, '.cloudflare/output/v0/workers/default/assets');
 const fsAssetSources = ['pages', 'snippets'];
 
 const getFsAssetFiles = async () => {
@@ -145,6 +149,10 @@ export default defineConfig({
     __filename: JSON.stringify('/typescript/lib/typescript.js'),
   },
   optimizeDeps: {
+    // The excluded Avatar package still needs its CommonJS dependency bundled.
+    include: [
+      '@node-core/ui-components > @radix-ui/react-avatar > use-sync-external-store/shim',
+    ],
     // vinext's development optimizer otherwise leaves bare imports to these
     // packages' pnpm-isolated transitive dependencies in its SSR output.
     exclude: [
@@ -155,15 +163,19 @@ export default defineConfig({
       '@radix-ui/react-select',
       '@radix-ui/react-tabs',
       '@radix-ui/react-tooltip',
+      // Keep RSC client references and browser hooks on the same Intl context.
+      'next-intl',
+      'use-intl',
     ],
   },
   plugins: [
     cloudflareFsAssets(),
     vinext({
-      cache: { cdn: cdnAdapter() },
+      cache: responseStoreAdapter(),
       images: { optimizer: imagesOptimizer() },
     }),
-    cloudflare({
+		cloudflare({
+			auxiliaryWorkers: [{ config: responseStoreServiceBinding }],
       viteEnvironment: {
         name: 'rsc',
         childEnvironments: ['ssr'],

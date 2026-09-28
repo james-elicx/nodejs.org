@@ -1,0 +1,4 @@
+/dist/
+.vinext/
+.wrangler/
+.cloudflare/

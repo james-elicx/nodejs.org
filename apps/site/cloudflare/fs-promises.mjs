@@ -29,8 +29,9 @@ export async function readFile(path) {
   }
 
   const { env } = await import('cloudflare:workers');
+  // The dev ASSETS binding forwards through Vite's hostname checks.
   const response = await env.ASSETS.fetch(
-    new URL(`/_fs_/${assetPath}`, 'http://assets.local')
+    new URL(`/_fs_/${assetPath}`, 'http://localhost')
   );
 
   if (!response.ok) {

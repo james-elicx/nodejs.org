@@ -19,6 +19,5 @@ catalog:
   tailwindcss: ~4.1.17
   typescript: 5.9.3
 
-minimumReleaseAgeExclude:
-  - '@vinext/cloudflare@1.0.0-beta.7'
-  - vinext@1.0.0-beta.9
+minimumReleaseAge: 0
+blockExoticSubdeps: false

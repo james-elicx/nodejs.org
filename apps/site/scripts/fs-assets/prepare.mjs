@@ -1,7 +1,7 @@
 import { cp, mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 
-const outputDirectory = 'dist/client';
+const outputDirectory = '.cloudflare/output/v0/workers/default/assets';
 const fsAssetsOutputDirectory = join(outputDirectory, '_fs_');
 const assetDirectories = ['pages', 'snippets'];
 
